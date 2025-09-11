@@ -1,3 +1,6 @@
+
+'use client';
+
 import { MainLayout } from "@/components/main-layout";
 import { books, summaries } from "@/lib/data";
 import { notFound } from "next/navigation";
@@ -6,12 +9,42 @@ import { AudioPlayer } from "@/components/audio-player";
 import { SummaryDisplay } from "@/components/summary-display";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { generateAudioAction } from "@/app/actions";
 
 export default function BookSummaryPage({ params }: { params: { id: string } }) {
+  const [audioSrc, setAudioSrc] = useState<string | null>(null);
+  const [isLoadingAudio, setIsLoadingAudio] = useState(true);
+
   const book = books.find((b) => b.id === params.id);
   const summary = summaries[params.id];
+
+  useEffect(() => {
+    if (!summary) return;
+
+    const getAudio = async () => {
+      setIsLoadingAudio(true);
+      try {
+        const result = await generateAudioAction(summary);
+        if (result.success && result.audioDataUri) {
+          setAudioSrc(result.audioDataUri);
+        } else {
+          console.error("Failed to generate audio:", result.error);
+          // Fallback to placeholder if generation fails
+          setAudioSrc("/placeholder-audio.mp3");
+        }
+      } catch (error) {
+        console.error("Error calling generateAudioAction:", error);
+        setAudioSrc("/placeholder-audio.mp3");
+      } finally {
+        setIsLoadingAudio(false);
+      }
+    };
+
+    getAudio();
+  }, [summary]);
 
   if (!book || !summary) {
     notFound();
@@ -55,7 +88,14 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
             </div>
 
             <div className="md:col-span-2 space-y-6">
-              <AudioPlayer audioSrc="/placeholder-audio.mp3" />
+              {isLoadingAudio ? (
+                <div className="flex items-center justify-center h-48 bg-card rounded-lg">
+                  <Loader2 className="size-8 animate-spin text-muted-foreground" />
+                   <p className="ml-4 text-muted-foreground">Generating audio...</p>
+                </div>
+              ) : (
+                audioSrc && <AudioPlayer audioSrc={audioSrc} />
+              )}
               <SummaryDisplay summary={summary} />
             </div>
           </div>

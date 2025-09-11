@@ -1,10 +1,8 @@
 
 "use server";
 
-// In a real application, this would process the EPUB file and call the GenAI flow.
-// For this mock, we'll just simulate a delay.
-
 import { generateBookSummary } from "@/ai/flows/generate-book-summary";
+import ElevenLabs from "elevenlabs-node";
 
 export async function handleFileUpload(
   formData: FormData
@@ -21,13 +19,8 @@ export async function handleFileUpload(
   }
 
   try {
-    // In a real app, you would read the file content and call the AI flow.
-    const bookContent = await file.text(); // Simplified for demo
-    await generateBookSummary({ bookContent, userApiKey });
-
-    // For this mock, we simply return success. The client-side will reload
-    // to show a "new" book from the mock data, simulating a library update.
-    // The delay simulation is removed as the real AI call will take time.
+    const bookContent = await file.text();
+    await generateBookSummary({ bookContent, userApiKey: userApiKey ?? undefined });
 
     return { success: true };
   } catch (error) {
@@ -36,5 +29,41 @@ export async function handleFileUpload(
       success: false,
       error: "An unexpected error occurred during summarization.",
     };
+  }
+}
+
+export async function generateAudioAction(
+  text: string
+): Promise<{ success: boolean; audioDataUri?: string; error?: string }> {
+  const elevenLabsApiKey = process.env.ELEVENLABS_API_KEY;
+
+  if (!elevenLabsApiKey) {
+    return { success: false, error: "ElevenLabs API key is not configured." };
+  }
+
+  const voice = new ElevenLabs({
+    apiKey: elevenLabsApiKey,
+  });
+
+  try {
+    const audioStream = await voice.textToSpeechStream({
+      textInput: text,
+      voiceId: "21m00Tcm4TlvDq8ikWAM", // Rachel
+      modelId: "eleven_multilingual_v2",
+       outputFormat: "mp3_44100_128",
+    });
+
+    const chunks: Buffer[] = [];
+    for await (const chunk of audioStream) {
+      chunks.push(chunk);
+    }
+
+    const audioBuffer = Buffer.concat(chunks);
+    const audioDataUri = `data:audio/mpeg;base64,${audioBuffer.toString("base64")}`;
+
+    return { success: true, audioDataUri };
+  } catch (error) {
+    console.error("ElevenLabs API error:", error);
+    return { success: false, error: "Failed to generate audio from ElevenLabs." };
   }
 }
