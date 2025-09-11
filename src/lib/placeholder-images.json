@@ -1,3 +1,34 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "atomic-habits",
+      "description": "Cover of Atomic Habits",
+      "imageUrl": "https://picsum.photos/seed/101/400/600",
+      "imageHint": "book cover"
+    },
+    {
+      "id": "sapiens",
+      "description": "Cover of Sapiens",
+      "imageUrl": "https://picsum.photos/seed/102/400/600",
+      "imageHint": "book cover art"
+    },
+    {
+      "id": "the-almanack-of-naval-ravikant",
+      "description": "Cover of The Almanack of Naval Ravikant",
+      "imageUrl": "https://picsum.photos/seed/103/400/600",
+      "imageHint": "book cover design"
+    },
+    {
+      "id": "thinking-fast-and-slow",
+      "description": "Cover of Thinking, Fast and Slow",
+      "imageUrl": "https://picsum.photos/seed/104/400/600",
+      "imageHint": "book design"
+    },
+    {
+      "id": "why-we-sleep",
+      "description": "Cover of Why We Sleep",
+      "imageUrl": "https://picsum.photos/seed/105/400/600",
+      "imageHint": "cover art"
+    }
+  ]
 }
