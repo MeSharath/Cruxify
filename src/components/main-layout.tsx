@@ -14,6 +14,7 @@ import {
   SidebarInset,
   SidebarProvider,
   SidebarFooter,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Logo } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -28,11 +29,12 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon">
-        <SidebarHeader>
+        <SidebarHeader className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo className="size-8 text-primary" />
             <span className="text-lg font-semibold">Cruxify</span>
           </Link>
+          <SidebarTrigger className="hidden md:flex" />
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
