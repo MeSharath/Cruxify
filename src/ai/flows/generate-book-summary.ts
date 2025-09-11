@@ -11,7 +11,6 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { googleAI } from '@genkit-ai/googleai';
 
 const GenerateBookSummaryInputSchema = z.object({
   bookContent: z
@@ -40,13 +39,13 @@ const generateBookSummaryFlow = ai.defineFlow(
   },
   async (input) => {
     
-    const llm = input.userApiKey
-      ? googleAI.model('gemini-1.5-pro-latest', { apiKey: input.userApiKey })
-      : 'googleai/gemini-1.5-pro-latest';
-      
-    const { output } = await ai.generate({
-      model: llm,
-      prompt: `You are a world-class AI assistant that specializes in distilling books into powerful, life-changing summaries. Your goal is to maximize user retention and empower them to apply the book's wisdom immediately.
+    const apiKey = input.userApiKey || process.env.PERPLEXITY_API_KEY;
+
+    if (!apiKey) {
+      throw new Error("Perplexity API key is not configured. Please add it to your environment variables or provide it in the settings.");
+    }
+    
+    const prompt = `You are a world-class AI assistant that specializes in distilling books into powerful, life-changing summaries. Your goal is to maximize user retention and empower them to apply the book's wisdom immediately.
 
 For the book content provided, create a compelling 15-minute summary. Go beyond just listing key points. For each key insight, you must:
 1.  **Explain the Insight Clearly:** Break down the core concept in a simple, memorable way.
@@ -57,12 +56,36 @@ For the book content provided, create a compelling 15-minute summary. Go beyond 
 Structure the output in a Headway-style format with clear section titles (using markdown '###') for each key insight and bulleted lists for the actionables.
 
 Book Content:
-${input.bookContent}`,
-      output: {
-        schema: GenerateBookSummaryOutputSchema,
+${input.bookContent}`;
+
+    // Perplexity API call
+    const response = await fetch('https://api.perplexity.ai/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
       },
+      body: JSON.stringify({
+        model: 'llama-3-sonar-large-32k-online',
+        messages: [
+          { role: 'system', content: 'You are an expert book summarizer.' },
+          { role: 'user', content: prompt },
+        ],
+      }),
     });
 
-    return output!;
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`Perplexity API request failed with status ${response.status}: ${errorBody}`);
+    }
+
+    const data = await response.json();
+    const summary = data.choices[0]?.message?.content;
+    
+    if (!summary) {
+      throw new Error('Failed to get a valid summary from Perplexity API.');
+    }
+
+    return { summary };
   }
 );

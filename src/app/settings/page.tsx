@@ -29,17 +29,17 @@ export default function SettingsPage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    const storedKey = localStorage.getItem("gemini_api_key");
+    const storedKey = localStorage.getItem("perplexity_api_key");
     if (storedKey) {
       setApiKey(storedKey);
     }
   }, []);
 
   const handleSaveApiKey = () => {
-    localStorage.setItem("gemini_api_key", apiKey);
+    localStorage.setItem("perplexity_api_key", apiKey);
     toast({
       title: "API Key Saved",
-      description: "Your Gemini API key has been saved locally.",
+      description: "Your Perplexity API key has been saved locally.",
     });
   };
 
@@ -56,17 +56,17 @@ export default function SettingsPage() {
             <CardHeader>
               <CardTitle>API Configuration</CardTitle>
               <CardDescription>
-                Provide your own Gemini API key to use for summaries. This
+                Provide your own Perplexity API key to use for summaries. This
                 is stored securely in your browser.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="api-key">Gemini API Key</Label>
+                <Label htmlFor="api-key">Perplexity API Key</Label>
                 <Input
                   id="api-key"
                   type="password"
-                  placeholder="Your Gemini API Key"
+                  placeholder="Your Perplexity API Key"
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
                 />

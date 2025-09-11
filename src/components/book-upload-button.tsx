@@ -34,7 +34,7 @@ export function BookUploadButton() {
     const file = formData.get("epub-file") as File;
     
     // Get user's API key from local storage
-    const userApiKey = localStorage.getItem("gemini_api_key");
+    const userApiKey = localStorage.getItem("perplexity_api_key");
     if (userApiKey) {
       formData.append("user_api_key", userApiKey);
     }
