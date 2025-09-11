@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -31,6 +32,12 @@ export function BookUploadButton() {
 
   const onFormAction = async (formData: FormData) => {
     const file = formData.get("epub-file") as File;
+    
+    // Get user's API key from local storage
+    const userApiKey = localStorage.getItem("gemini_api_key");
+    if (userApiKey) {
+      formData.append("user_api_key", userApiKey);
+    }
     
     setIsUploading(true);
     const result = await handleFileUpload(formData);

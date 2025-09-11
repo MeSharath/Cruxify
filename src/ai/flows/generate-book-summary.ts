@@ -1,20 +1,23 @@
+
 'use server';
 
 /**
  * @fileOverview This file defines a Genkit flow for generating a concise, Headway-style summary of a book.
  *
  * - generateBookSummary - A function that takes EPUB content as input and returns a summarized text.
- * - GenerateBookSummaryInput - The input type for the generateBookSummary function, which includes the book's EPUB content.
+ * - GenerateBookSummaryInput - The input type for the generateBooksummary function, which includes the book's EPUB content.
  * - GenerateBookSummaryOutput - The return type for the generateBookSummary function, which is the generated summary text.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
+import { googleAI } from '@genkit-ai/googleai';
 
 const GenerateBookSummaryInputSchema = z.object({
   bookContent: z
     .string()
     .describe('The content of the book in EPUB format.'),
+  userApiKey: z.string().optional().describe("User's API key."),
 });
 export type GenerateBookSummaryInput = z.infer<typeof GenerateBookSummaryInputSchema>;
 
@@ -29,11 +32,21 @@ export async function generateBookSummary(input: GenerateBookSummaryInput): Prom
   return generateBookSummaryFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'generateBookSummaryPrompt',
-  input: {schema: GenerateBookSummaryInputSchema},
-  output: {schema: GenerateBookSummaryOutputSchema},
-  prompt: `You are a world-class AI assistant that specializes in distilling books into powerful, life-changing summaries. Your goal is to maximize user retention and empower them to apply the book's wisdom immediately.
+const generateBookSummaryFlow = ai.defineFlow(
+  {
+    name: 'generateBookSummaryFlow',
+    inputSchema: GenerateBookSummaryInputSchema,
+    outputSchema: GenerateBookSummaryOutputSchema,
+  },
+  async (input) => {
+    
+    const llm = input.userApiKey
+      ? googleAI.model('gemini-1.5-pro-latest', { apiKey: input.userApiKey })
+      : 'googleai/gemini-1.5-pro-latest';
+      
+    const { output } = await ai.generate({
+      model: llm,
+      prompt: `You are a world-class AI assistant that specializes in distilling books into powerful, life-changing summaries. Your goal is to maximize user retention and empower them to apply the book's wisdom immediately.
 
 For the book content provided, create a compelling 15-minute summary. Go beyond just listing key points. For each key insight, you must:
 1.  **Explain the Insight Clearly:** Break down the core concept in a simple, memorable way.
@@ -44,17 +57,12 @@ For the book content provided, create a compelling 15-minute summary. Go beyond 
 Structure the output in a Headway-style format with clear section titles (using markdown '###') for each key insight and bulleted lists for the actionables.
 
 Book Content:
-{{bookContent}}`,
-});
+${input.bookContent}`,
+      output: {
+        schema: GenerateBookSummaryOutputSchema,
+      },
+    });
 
-const generateBookSummaryFlow = ai.defineFlow(
-  {
-    name: 'generateBookSummaryFlow',
-    inputSchema: GenerateBookSummaryInputSchema,
-    outputSchema: GenerateBookSummaryOutputSchema,
-  },
-  async input => {
-    const {output} = await prompt(input);
     return output!;
   }
 );

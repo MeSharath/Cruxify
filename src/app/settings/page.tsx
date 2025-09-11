@@ -1,3 +1,6 @@
+
+"use client";
+
 import { MainLayout } from "@/components/main-layout";
 import { PageHeader } from "@/components/page-header";
 import {
@@ -16,8 +19,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function SettingsPage() {
+  const [apiKey, setApiKey] = useState("");
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const storedKey = localStorage.getItem("gemini_api_key");
+    if (storedKey) {
+      setApiKey(storedKey);
+    }
+  }, []);
+
+  const handleSaveApiKey = () => {
+    localStorage.setItem("gemini_api_key", apiKey);
+    toast({
+      title: "API Key Saved",
+      description: "Your Gemini API key has been saved locally.",
+    });
+  };
+
   return (
     <MainLayout>
       <div className="p-4 md:p-8">
@@ -27,6 +52,29 @@ export default function SettingsPage() {
         />
 
         <div className="max-w-2xl grid gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>API Configuration</CardTitle>
+              <CardDescription>
+                Provide your own Gemini API key to use for summaries. This
+                is stored securely in your browser.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="api-key">Gemini API Key</Label>
+                <Input
+                  id="api-key"
+                  type="password"
+                  placeholder="Your Gemini API Key"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                />
+              </div>
+              <Button onClick={handleSaveApiKey}>Save API Key</Button>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle>Reminders</CardTitle>

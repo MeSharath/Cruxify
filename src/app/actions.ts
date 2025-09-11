@@ -1,3 +1,4 @@
+
 "use server";
 
 // In a real application, this would process the EPUB file and call the GenAI flow.
@@ -9,6 +10,7 @@ export async function handleFileUpload(
   formData: FormData
 ): Promise<{ success: boolean; error?: string }> {
   const file = formData.get("epub-file") as File;
+  const userApiKey = formData.get("user_api_key") as string | null;
 
   if (!file || file.size === 0) {
     return { success: false, error: "No file selected. Please choose an EPUB file to upload." };
@@ -19,15 +21,13 @@ export async function handleFileUpload(
   }
 
   try {
-    // Simulate processing time for summary generation
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-
     // In a real app, you would read the file content and call the AI flow.
-    // const bookContent = await file.text(); // Simplified for demo
-    // const summary = await generateBookSummary({ bookContent });
+    const bookContent = await file.text(); // Simplified for demo
+    await generateBookSummary({ bookContent, userApiKey });
 
     // For this mock, we simply return success. The client-side will reload
     // to show a "new" book from the mock data, simulating a library update.
+    // The delay simulation is removed as the real AI call will take time.
 
     return { success: true };
   } catch (error) {
