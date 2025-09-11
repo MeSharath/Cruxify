@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -26,7 +27,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider>
-      <Sidebar>
+      <Sidebar collapsible="icon">
         <SidebarHeader>
           <Link href="/" className="flex items-center gap-2">
             <Logo className="size-8 text-primary" />
@@ -36,7 +37,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         <SidebarContent>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={isActive("/")}>
+              <SidebarMenuButton asChild isActive={isActive("/")} tooltip="My Library">
                 <Link href="/">
                   <Book />
                   My Library
@@ -44,7 +45,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={isActive("/settings")}>
+              <SidebarMenuButton asChild isActive={isActive("/settings")} tooltip="Settings">
                 <Link href="/settings">
                   <Settings />
                   Settings
@@ -62,7 +63,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
-              <span className="font-medium text-sm">Productive Priya</span>
+              <span className="font-medium text-sm">User</span>
             </div>
           </div>
         </SidebarFooter>
