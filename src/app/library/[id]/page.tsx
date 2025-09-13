@@ -8,18 +8,21 @@ import Image from "next/image";
 import { AudioPlayer } from "@/components/audio-player";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Headphones, Loader2, AlertCircle } from "lucide-react";
+import { ArrowLeft, Headphones, Loader2, AlertCircle, FileDown } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { BookView } from "@/components/book-view";
 import { useToast } from "@/hooks/use-toast";
 import { generateAudioAction } from "@/app/actions";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 export default function BookSummaryPage({ params }: { params: { id: string } }) {
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
   const [audioError, setAudioError] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   const { toast } = useToast();
 
@@ -67,6 +70,56 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
         setIsLoadingAudio(false);
     }
   };
+  
+  const handleExportToPdf = async () => {
+    setIsExporting(true);
+    toast({
+      title: "Exporting PDF...",
+      description: "Please wait while we generate your PDF.",
+    });
+
+    const summaryElement = document.querySelector("#summary-content-for-pdf") as HTMLElement;
+    if (!summaryElement) {
+        toast({
+            variant: "destructive",
+            title: "Export Failed",
+            description: "Could not find summary content to export.",
+        });
+        setIsExporting(false);
+        return;
+    }
+
+    try {
+        const canvas = await html2canvas(summaryElement, {
+            scale: 2, // Higher scale for better quality
+            useCORS: true,
+        });
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF({
+            orientation: "portrait",
+            unit: "px",
+            format: [canvas.width, canvas.height]
+        });
+
+        pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+        pdf.save(`${book.title.replace(/ /g, "_")}_Summary.pdf`);
+
+        toast({
+            title: "PDF Exported",
+            description: "Your summary has been successfully exported as a PDF.",
+        });
+
+    } catch (error) {
+        console.error("PDF Export Error:", error);
+        toast({
+            variant: "destructive",
+            title: "Export Failed",
+            description: "An unexpected error occurred while exporting to PDF.",
+        });
+    } finally {
+        setIsExporting(false);
+    }
+  };
 
 
   return (
@@ -104,21 +157,21 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
                     <Badge variant="secondary">15-min Summary</Badge>
                     <Badge variant="secondary">Audio Available</Badge>
                   </div>
-                  <div className="mt-6 font-sans">
+                  <div className="mt-6 font-sans space-y-2">
                       {audioSrc && <AudioPlayer audioSrc={audioSrc} />}
-
-                      {!audioSrc && !isLoadingAudio && !audioError && (
-                        <Button onClick={handleGenerateAudio} className="w-full">
-                          <Headphones className="mr-2 size-4" />
-                          Listen to Summary
-                        </Button>
-                      )}
 
                       {isLoadingAudio && (
                         <div className="flex items-center justify-center h-24 bg-card rounded-lg shadow-inner">
                           <Loader2 className="size-6 animate-spin text-muted-foreground" />
                           <p className="ml-4 text-muted-foreground">Generating audio...</p>
                         </div>
+                      )}
+                      
+                      {!audioSrc && !isLoadingAudio && (
+                        <Button onClick={handleGenerateAudio} className="w-full">
+                          <Headphones className="mr-2 size-4" />
+                          Listen to Summary
+                        </Button>
                       )}
 
                       {audioError && !isLoadingAudio && (
@@ -130,11 +183,20 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
                             </AlertDescription>
                         </Alert>
                       )}
+                      
+                      <Button onClick={handleExportToPdf} variant="outline" className="w-full" disabled={isExporting}>
+                        {isExporting ? (
+                          <Loader2 className="mr-2 size-4 animate-spin" />
+                        ) : (
+                          <FileDown className="mr-2 size-4" />
+                        )}
+                        Export to PDF
+                      </Button>
                     </div>
                 </div>
               </div>
 
-              <div className="md:col-span-2 space-y-6 mt-8 md:mt-0">
+              <div id="summary-content-for-pdf" className="md:col-span-2 space-y-6 mt-8 md:mt-0">
                 <BookView summary={summary} />
               </div>
             </div>
