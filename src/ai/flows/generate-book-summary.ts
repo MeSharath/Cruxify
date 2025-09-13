@@ -48,8 +48,8 @@ const generateBookSummaryFlow = ai.defineFlow(
     const prompt = `You are a master storyteller and literary artist. Your task is to transform the provided book content into an immersive, narrative-style summary.
 
 Your response must follow this structure:
-1.  **Chapters:** The summary must be broken into several "chapters." Each chapter must begin with a descriptive title formatted with markdown '###'.
-2.  **Narrative Flow:** Within each chapter, weave the key insights into a flowing narrative. Do NOT use bullet points or numbered lists. Explain concepts through storytelling.
+1.  **Chapters:** The summary must be broken into at least 8 "chapters." Each chapter must begin with a descriptive title formatted with markdown '###'.
+2.  **Narrative Flow:** Within each chapter, weave the key insights into a flowing narrative. Go into detail. Do NOT use bullet points or numbered lists. Explain concepts through storytelling.
 3.  **Pull-Quotes:** For each chapter, identify one or two powerful, impactful sentences that capture a core idea. Embed them directly within the text using the format: \`{{pullquote: "The quote text goes here."}}\`
 4.  **Reflection Questions:** At the end of each chapter, provide one thought-provoking reflection question to encourage deeper engagement. Format it like this: \`{{reflection: "Your question here?"}}\`
 
