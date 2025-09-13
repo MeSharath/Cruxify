@@ -76,7 +76,7 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
               </Button>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8 items-start">
+            <div className="grid md:grid-cols-3 gap-x-8 lg:gap-x-12 items-start">
               <div className="md:col-span-1">
                 <div className="sticky top-24">
                   <div className="aspect-[2/3] w-full max-w-[250px] mx-auto md:mx-0 relative mb-4 rounded-lg overflow-hidden shadow-2xl">
@@ -100,7 +100,7 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
                 </div>
               </div>
 
-              <div className="md:col-span-2 space-y-6">
+              <div className="md:col-span-2 space-y-6 mt-8 md:mt-0">
                 {isLoadingAudio ? (
                   <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg font-sans">
                     <Loader2 className="size-8 animate-spin text-muted-foreground" />
@@ -109,8 +109,8 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
                 ) : (
                   audioSrc ? <AudioPlayer audioSrc={audioSrc} /> : <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg font-sans"><p className="text-muted-foreground">Audio could not be generated.</p></div>
                 )}
-                <div className="relative p-2 bg-gradient-to-r from-neutral-300/30 via-transparent to-neutral-300/30">
-                  <div className="relative bg-background p-px shadow-lg rounded-sm">
+                <div className="relative p-2 bg-gradient-to-r from-neutral-300/30 via-transparent to-neutral-300/30 rounded-lg shadow-2xl before:absolute before:inset-0 before:-z-10 before:bg-white/50 before:rounded-lg after:absolute after:left-1/2 after:-translate-x-1/2 after:top-0 after:bottom-0 after:w-2 after:bg-neutral-300/40 after:shadow-inner">
+                  <div className="relative bg-background/80 backdrop-blur-sm p-px shadow-lg rounded-sm">
                     <SummaryDisplay summary={summary} />
                   </div>
                 </div>

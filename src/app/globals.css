@@ -4,11 +4,11 @@
 
 @layer base {
   :root {
-    --background: 40 33% 96%;
+    --background: 36 33% 96%;
     --foreground: 262 15% 25%;
-    --card: 40 33% 92%;
+    --card: 36 33% 92%;
     --card-foreground: 262 15% 25%;
-    --popover: 40 33% 92%;
+    --popover: 36 33% 92%;
     --popover-foreground: 262 15% 25%;
     --primary: 262 52% 50%;
     --primary-foreground: 0 0% 98%;
@@ -41,24 +41,24 @@
   }
 
   .dark {
-    --background: 262 15% 10%;
-    --foreground: 262 15% 80%;
-    --card: 262 15% 15%;
-    --card-foreground: 262 15% 80%;
-    --popover: 262 15% 15%;
-    --popover-foreground: 262 15% 80%;
+    --background: 36 25% 94%;
+    --foreground: 262 15% 20%;
+    --card: 36 25% 90%;
+    --card-foreground: 262 15% 20%;
+    --popover: 36 25% 90%;
+    --popover-foreground: 262 15% 20%;
     --primary: 262 52% 50%;
     --primary-foreground: 0 0% 98%;
-    --secondary: 262 15% 20%;
+    --secondary: 262 15% 86%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 262 15% 20%;
-    --muted-foreground: 262 15% 60%;
+    --muted: 262 15% 86%;
+    --muted-foreground: 262 15% 55%;
     --accent: 174 100% 34%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 262 15% 25%;
-    --input: 262 15% 25%;
+    --border: 262 15% 75%;
+    --input: 262 15% 75%;
     --ring: 174 100% 34%;
     
     --sidebar-background: 262 15% 15%;
@@ -78,5 +78,14 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  .summary-content {
+    p {
+      @apply mb-4;
+    }
+
+    p:first-child::first-letter {
+      @apply float-left font-headline text-5xl font-bold leading-[0.8] mr-2 mt-1;
+    }
   }
 }

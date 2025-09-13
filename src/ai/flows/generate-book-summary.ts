@@ -45,12 +45,22 @@ const generateBookSummaryFlow = ai.defineFlow(
       throw new Error("Perplexity API key is not configured. Please add it to your environment variables or provide it in the settings.");
     }
     
-    const prompt = `You are a master storyteller and literary artist. Your task is to transform the provided book content into an immersive, narrative-style summary that captures the essence and voice of the original author.
+    const prompt = `You are a master storyteller and literary artist. Your task is to transform the provided book content into an immersive, narrative-style summary.
 
-Instead of a dry list of key points, craft a compelling narrative that flows like a story. Use engaging metaphors, vivid descriptions, and a chapter-like structure with descriptive titles. The goal is to make the user feel like they are reading a beautifully condensed version of the book itself.
+Your response must follow this structure:
+1.  **Chapters:** The summary must be broken into several "chapters." Each chapter must begin with a descriptive title formatted with markdown '###'.
+2.  **Narrative Flow:** Within each chapter, weave the key insights into a flowing narrative. Do NOT use bullet points or numbered lists. Explain concepts through storytelling.
+3.  **Pull-Quotes:** For each chapter, identify one or two powerful, impactful sentences that capture a core idea. Embed them directly within the text using the format: \`{{pullquote: "The quote text goes here."}}\`
+4.  **Reflection Questions:** At the end of each chapter, provide one thought-provoking reflection question to encourage deeper engagement. Format it like this: \`{{reflection: "Your question here?"}}\`
 
-Your summary should be structured into several "chapters," each with a descriptive title formatted with markdown '###'. Within each chapter, weave the key insights into a flowing narrative. Avoid bullet points or numbered lists. Instead, explain concepts through storytelling and examples that resonate with the book's tone.
+Here is an example of a single chapter's format:
+### Chapter Title
+Here is the first paragraph of the narrative. It flows like a story.
+{{pullquote: "This is an important insight that deserves to be highlighted."}}
+Here is the second paragraph, continuing the story and elaborating on the concepts. The narrative should be engaging and reflect the author's voice.
+{{reflection: "How can you apply this concept to your own life?"}}
 
+---
 Book Content:
 ${input.bookContent}`;
 
