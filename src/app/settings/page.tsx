@@ -62,8 +62,7 @@ export default function SettingsPage() {
             <CardHeader>
               <CardTitle>API Configuration</CardTitle>
               <CardDescription>
-                Provide your own API keys to use the services. Keys are
-                stored securely in your browser and are never sent to our servers.
+                Provide your own API keys to use the services. If you don't provide a key, the application will use a default key with a limited usage quota. Keys are stored securely in your browser.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -141,3 +140,4 @@ export default function SettingsPage() {
     </MainLayout>
   );
 }
+

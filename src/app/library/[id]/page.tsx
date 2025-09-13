@@ -126,3 +126,4 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
     </MainLayout>
   );
 }
+
