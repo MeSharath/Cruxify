@@ -33,16 +33,15 @@ export async function handleFileUpload(
 }
 
 export async function generateAudioAction(
-  text: string,
-  userApiKey?: string
+  text: string
 ): Promise<{ success: boolean; audioDataUri?: string; error?: string }> {
-  // Prioritize server-side key, then user-provided key.
-  const elevenLabsApiKey = process.env.ELEVENLABS_API_KEY || userApiKey;
+  // Always use the server-side key. This is the definitive fix.
+  const elevenLabsApiKey = process.env.ELEVENLABS_API_KEY;
 
   if (!elevenLabsApiKey) {
     return {
       success: false,
-      error: "ElevenLabs API key not configured. Please add it via the Settings page or as an environment variable.",
+      error: "ElevenLabs API key not configured on the server.",
     };
   }
 

@@ -30,24 +30,27 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
     setIsLoadingAudio(true);
     setAudioGenerationStarted(true);
     try {
-      const userApiKey = localStorage.getItem("elevenlabs_api_key") || undefined;
-      const result = await generateAudioAction(summary, userApiKey);
+      // No longer sending the user API key from local storage
+      const result = await generateAudioAction(summary);
+      
       if (result.success && result.audioDataUri) {
         setAudioSrc(result.audioDataUri);
       } else {
+        // Display the specific error from the server action
         console.error("Failed to generate audio:", result.error);
         toast({
           title: "Audio Generation Failed",
-          description: result.error,
+          description: result.error || "An unknown error occurred.",
           variant: "destructive",
         });
         setAudioSrc(null);
       }
     } catch (error) {
       console.error("Error calling generateAudioAction:", error);
+      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred.";
       toast({
         title: "Audio Generation Failed",
-        description: "An unexpected error occurred.",
+        description: errorMessage,
         variant: "destructive",
       });
       setAudioSrc(null);
