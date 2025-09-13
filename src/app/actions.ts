@@ -2,7 +2,6 @@
 "use server";
 
 import { generateBookSummary } from "@/ai/flows/generate-book-summary";
-import * as elevenlabs from "elevenlabs-node";
 
 export async function handleFileUpload(
   formData: FormData
@@ -46,31 +45,41 @@ export async function generateAudioAction(
     };
   }
 
+  const VOICE_ID = '21m00Tcm4TlvDq8ikWAM'; // Rachel
+  const url = `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}/stream`;
+
   try {
-    const client = new elevenlabs.ElevenLabsClient({
-      apiKey: elevenLabsApiKey,
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'xi-api-key': elevenLabsApiKey,
+        'Accept': 'audio/mpeg',
+      },
+      body: JSON.stringify({
+        text,
+        model_id: 'eleven_multilingual_v2',
+        voice_settings: {
+          stability: 0.5,
+          similarity_boost: 0.75,
+        },
+      }),
     });
-
-    const audioStream = await client.generate({
-      stream: true,
-      voice: "Rachel",
-      model_id: "eleven_multilingual_v2",
-      text,
-    });
-
-    const chunks: Buffer[] = [];
-    for await (const chunk of audioStream) {
-      chunks.push(chunk);
+    
+    if (!response.ok) {
+        const errorBody = await response.text();
+        console.error("ElevenLabs API error response:", errorBody);
+        throw new Error(`Failed to generate audio: ${response.statusText} - ${errorBody}`);
     }
 
-    const audioBuffer = Buffer.concat(chunks);
-    const audioDataUri = `data:audio/mpeg;base64,${audioBuffer.toString(
-      "base64"
-    )}`;
+    const audioArrayBuffer = await response.arrayBuffer();
+    const audioBuffer = Buffer.from(audioArrayBuffer);
+    const audioDataUri = `data:audio/mpeg;base64,${audioBuffer.toString('base64')}`;
 
     return { success: true, audioDataUri };
+
   } catch (error) {
-    console.error("ElevenLabs API error:", error);
+    console.error("ElevenLabs API request failed:", error);
     const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred.";
     return { success: false, error: `Failed to generate audio: ${errorMessage}` };
   }
