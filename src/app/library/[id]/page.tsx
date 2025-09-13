@@ -34,10 +34,18 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
     setIsLoadingAudio(true);
     setAudioError(null);
     try {
+      toast({
+        title: "Generating Audio...",
+        description: "Please wait a moment while we create the audio summary.",
+      });
       const result = await generateAudioAction(summary);
 
       if (result.success && result.audioData) {
         setAudioSrc(result.audioData);
+        toast({
+          title: "Audio Ready",
+          description: "Your audio summary is now ready to play.",
+        });
       } else {
         const errorMsg = result.error || "An unknown error occurred.";
         setAudioError(errorMsg);

@@ -2,7 +2,6 @@
 "use server";
 
 import { generateBookSummary } from "@/ai/flows/generate-book-summary";
-import { generateAudio } from "@/ai/flows/generate-audio-flow";
 
 export async function handleFileUpload(
   formData: FormData
@@ -46,11 +45,45 @@ export async function generateAudioAction(
     return { success: false, error: "No summary text provided." };
   }
 
+  const apiKey = process.env.ELEVENLABS_API_KEY;
+  if (!apiKey) {
+    return { success: false, error: "ElevenLabs API key is not configured on the server." };
+  }
+  
+  const VOICE_ID = '21m00Tcm4TlvDq8ikWAM'; // Rachel
+  const url = `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`;
+  
   try {
-    const result = await generateAudio({ text });
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Accept': 'audio/mpeg',
+            'Content-Type': 'application/json',
+            'xi-api-key': apiKey,
+        },
+        body: JSON.stringify({
+            text: text,
+            model_id: 'eleven_monolingual_v1',
+            voice_settings: {
+                stability: 0.5,
+                similarity_boost: 0.5,
+            },
+        }),
+    });
+
+    if (!response.ok) {
+        const errorBody = await response.json();
+        console.error("ElevenLabs API error response:", errorBody);
+        const errorMessage = errorBody.detail?.message || response.statusText;
+        return { success: false, error: `Failed to generate audio: ${errorMessage}` };
+    }
+
+    const audioArrayBuffer = await response.arrayBuffer();
+    const audioData = `data:audio/mpeg;base64,${Buffer.from(audioArrayBuffer).toString('base64')}`;
+
     return {
       success: true,
-      audioData: result.audioData,
+      audioData,
     };
   } catch (error) {
     console.error("Audio generation failed:", error);
