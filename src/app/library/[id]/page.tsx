@@ -8,55 +8,53 @@ import Image from "next/image";
 import { AudioPlayer } from "@/components/audio-player";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Headphones, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { generateAudioAction } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 import { BookView } from "@/components/book-view";
 
 export default function BookSummaryPage({ params }: { params: { id: string } }) {
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
-  const [isLoadingAudio, setIsLoadingAudio] = useState(true);
+  const [isLoadingAudio, setIsLoadingAudio] = useState(false);
+  const [audioGenerationStarted, setAudioGenerationStarted] = useState(false);
   const { toast } = useToast();
 
   const book = books.find((b) => b.id === params.id);
   const summary = summaries[params.id];
 
-  useEffect(() => {
+  const handleGenerateAudio = async () => {
     if (!summary) return;
 
-    const getAudio = async () => {
-      setIsLoadingAudio(true);
-      try {
-        const userApiKey = localStorage.getItem("elevenlabs_api_key") || undefined;
-        const result = await generateAudioAction(summary, userApiKey);
-        if (result.success && result.audioDataUri) {
-          setAudioSrc(result.audioDataUri);
-        } else {
-          console.error("Failed to generate audio:", result.error);
-          toast({
-            title: "Audio Generation Failed",
-            description: result.error,
-            variant: "destructive",
-          });
-          setAudioSrc(null); // Set to null if generation fails
-        }
-      } catch (error) {
-        console.error("Error calling generateAudioAction:", error);
+    setIsLoadingAudio(true);
+    setAudioGenerationStarted(true);
+    try {
+      const userApiKey = localStorage.getItem("elevenlabs_api_key") || undefined;
+      const result = await generateAudioAction(summary, userApiKey);
+      if (result.success && result.audioDataUri) {
+        setAudioSrc(result.audioDataUri);
+      } else {
+        console.error("Failed to generate audio:", result.error);
         toast({
-            title: "Audio Generation Failed",
-            description: "An unexpected error occurred.",
-            variant: "destructive",
-          });
+          title: "Audio Generation Failed",
+          description: result.error,
+          variant: "destructive",
+        });
         setAudioSrc(null);
-      } finally {
-        setIsLoadingAudio(false);
       }
-    };
-
-    getAudio();
-  }, [summary, toast]);
+    } catch (error) {
+      console.error("Error calling generateAudioAction:", error);
+      toast({
+        title: "Audio Generation Failed",
+        description: "An unexpected error occurred.",
+        variant: "destructive",
+      });
+      setAudioSrc(null);
+    } finally {
+      setIsLoadingAudio(false);
+    }
+  };
 
   if (!book || !summary) {
     notFound();
@@ -98,13 +96,18 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
                     {audioSrc && <Badge variant="secondary">Audio Available</Badge>}
                   </div>
                   <div className="mt-6 font-sans">
-                    {isLoadingAudio ? (
+                    {!audioGenerationStarted ? (
+                      <Button onClick={handleGenerateAudio} className="w-full">
+                        <Headphones className="mr-2 size-4" />
+                        I'd rather listen to it
+                      </Button>
+                    ) : isLoadingAudio ? (
                       <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg">
                         <Loader2 className="size-8 animate-spin text-muted-foreground" />
                         <p className="ml-4 text-muted-foreground">Generating audio...</p>
                       </div>
                     ) : (
-                      audioSrc ? <AudioPlayer audioSrc={audioSrc} /> : <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg"><p className="text-muted-foreground">Audio could not be generated.</p></div>
+                      audioSrc ? <AudioPlayer audioSrc={audioSrc} /> : <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg"><p className="text-muted-foreground text-center p-4">Audio could not be generated. Please check your API key and try again.</p></div>
                     )}
                   </div>
                 </div>
