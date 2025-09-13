@@ -8,18 +8,18 @@ import Image from "next/image";
 import { AudioPlayer } from "@/components/audio-player";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Headphones, Loader2, MicOff, AlertCircle } from "lucide-react";
+import { ArrowLeft, Headphones, Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { BookView } from "@/components/book-view";
 import { useToast } from "@/hooks/use-toast";
-import { getPreGeneratedAudio } from "@/app/actions";
+import { generateAudioAction } from "@/app/actions";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function BookSummaryPage({ params }: { params: { id: string } }) {
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
-  const [audioAvailable, setAudioAvailable] = useState<boolean | null>(null);
+  const [audioError, setAudioError] = useState<string | null>(null);
 
   const { toast } = useToast();
 
@@ -32,26 +32,28 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
 
   const handleGenerateAudio = async () => {
     setIsLoadingAudio(true);
+    setAudioError(null);
     try {
-      const result = await getPreGeneratedAudio(book.id);
+      const result = await generateAudioAction(summary);
 
       if (result.success && result.audioData) {
         setAudioSrc(result.audioData);
-        setAudioAvailable(true);
       } else {
-        setAudioAvailable(false);
+        const errorMsg = result.error || "An unknown error occurred.";
+        setAudioError(errorMsg);
         toast({
           variant: "destructive",
-          title: "Audio Not Available",
-          description: result.error || "An audio version could not be found for this book.",
+          title: "Audio Generation Failed",
+          description: errorMsg,
         });
       }
     } catch (error) {
-       setAudioAvailable(false);
+       const errorMsg = error instanceof Error ? error.message : "An unexpected error occurred.";
+       setAudioError(errorMsg)
        toast({
           variant: "destructive",
           title: "An Error Occurred",
-          description: "Could not retrieve the audio summary. Please try again later.",
+          description: errorMsg,
         });
     } finally {
         setIsLoadingAudio(false);
@@ -97,7 +99,7 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
                   <div className="mt-6 font-sans">
                       {audioSrc && <AudioPlayer audioSrc={audioSrc} />}
 
-                      {!audioSrc && !isLoadingAudio && audioAvailable !== false && (
+                      {!audioSrc && !isLoadingAudio && !audioError && (
                         <Button onClick={handleGenerateAudio} className="w-full">
                           <Headphones className="mr-2 size-4" />
                           Listen to Summary
@@ -111,12 +113,12 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
                         </div>
                       )}
 
-                      {audioAvailable === false && !isLoadingAudio && (
+                      {audioError && !isLoadingAudio && (
                          <Alert variant="destructive" className="bg-destructive/10 border-destructive/30 text-destructive-foreground">
                             <AlertCircle className="h-4 w-4 !text-destructive" />
                             <AlertTitle className="text-destructive">Audio Not Available</AlertTitle>
                             <AlertDescription className="text-destructive/90">
-                                An audio version for this book is not yet available.
+                                {audioError}
                             </AlertDescription>
                         </Alert>
                       )}

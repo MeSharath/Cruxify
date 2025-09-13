@@ -2,8 +2,7 @@
 "use server";
 
 import { generateBookSummary } from "@/ai/flows/generate-book-summary";
-import { summaries, audioData } from "@/lib/data";
-import { preGeneratedAudio } from "@/lib/audio-data";
+import { generateAudio } from "@/ai/flows/generate-audio-flow";
 
 export async function handleFileUpload(
   formData: FormData
@@ -34,34 +33,29 @@ export async function handleFileUpload(
   }
 }
 
-type GetAudioOutput = {
+type GenerateAudioOutput = {
   success: boolean;
   audioData?: string;
   error?: string;
 };
 
-// This function simulates fetching pre-generated audio from a backend store.
-export async function getPreGeneratedAudio(
-  bookId: string
-): Promise<GetAudioOutput> {
-  console.log(`Searching for pre-generated audio for book ID: ${bookId}`);
-  
-  // Simulate network/database latency
-  await new Promise(resolve => setTimeout(resolve, 2500));
+export async function generateAudioAction(
+  text: string,
+): Promise<GenerateAudioOutput> {
+  if (!text) {
+    return { success: false, error: "No summary text provided." };
+  }
 
-  const audio = preGeneratedAudio[bookId];
-
-  if (audio) {
-    console.log(`Audio found for ${bookId}.`);
+  try {
+    const result = await generateAudio({ text });
     return {
       success: true,
-      audioData: audio,
+      audioData: result.audioData,
     };
-  } else {
-    console.log(`No pre-generated audio found for ${bookId}.`);
-    return {
-      success: false,
-      error: "An audio summary is not yet available for this book.",
-    };
+  } catch (error) {
+    console.error("Audio generation failed:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "An unexpected error occurred.";
+    return { success: false, error: `Failed to generate audio: ${errorMessage}` };
   }
 }
