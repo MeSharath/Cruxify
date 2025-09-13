@@ -5,6 +5,7 @@ export type Book = {
   author: string;
   coverImageUrl: string;
   imageHint: string;
+  status: "processed" | "processing";
 };
 
 export type UserStats = {
@@ -22,6 +23,7 @@ export const books: Book[] = [
     author: "James Clear",
     coverImageUrl: "https://picsum.photos/seed/101/400/600",
     imageHint: "book cover",
+    status: "processed",
   },
   {
     id: "sapiens",
@@ -29,6 +31,7 @@ export const books: Book[] = [
     author: "Yuval Noah Harari",
     coverImageUrl: "https://picsum.photos/seed/102/400/600",
     imageHint: "book cover art",
+    status: "processed",
   },
   {
     id: "the-almanack-of-naval-ravikant",
@@ -36,6 +39,7 @@ export const books: Book[] = [
     author: "Eric Jorgenson",
     coverImageUrl: "https://picsum.photos/seed/103/400/600",
     imageHint: "book cover design",
+    status: "processed",
   },
   {
     id: "thinking-fast-and-slow",
@@ -43,6 +47,7 @@ export const books: Book[] = [
     author: "Daniel Kahneman",
     coverImageUrl: "https://picsum.photos/seed/104/400/600",
     imageHint: "book design",
+    status: "processed",
   },
   {
     id: "why-we-sleep",
@@ -50,6 +55,7 @@ export const books: Book[] = [
     author: "Matthew Walker",
     coverImageUrl: "https://picsum.photos/seed/105/400/600",
     imageHint: "cover art",
+    status: "processed",
   },
 ];
 
@@ -57,7 +63,7 @@ export const userStats: UserStats = {
   dailyGoal: 1,
   weeklyStreak: 0,
   longestStreak: 0,
-  booksCompleted: books.length,
+  booksCompleted: books.filter((b) => b.status === "processed").length,
   badges: [],
 };
 

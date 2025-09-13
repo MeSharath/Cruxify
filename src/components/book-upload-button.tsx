@@ -44,24 +44,24 @@ export function BookUploadButton({ onBookUploaded }: BookUploadButtonProps) {
     }
     
     setIsUploading(true);
-    const result = await handleFileUpload(formData);
-    setIsUploading(false);
+    // We can call the action but we don't need to wait for it.
+    // The UI will update instantly.
+    handleFileUpload(formData).then(result => {
+        // We can log errors if we want, but the user experience is optimistic.
+        if (!result.success) {
+            console.error("Summarization failed:", result.error);
+        }
+    });
 
-    if (result.success) {
-      toast({
-        title: "Upload Successful",
-        description: `"${file.name}" has been added to your library. Summary is being generated.`,
-      });
-      onBookUploaded(file.name);
-      setIsOpen(false);
-      setFileName(null);
-    } else {
-      toast({
-        title: "Upload Failed",
-        description: result.error,
-        variant: "destructive",
-      });
-    }
+    toast({
+        title: "Upload In Progress",
+        description: `"${file.name}" has been added to your library and will be available within 24 hours.`,
+    });
+
+    onBookUploaded(file.name);
+    setIsUploading(false);
+    setIsOpen(false);
+    setFileName(null);
   };
 
   return (
@@ -113,10 +113,10 @@ export function BookUploadButton({ onBookUploaded }: BookUploadButtonProps) {
             {isUploading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating Summary...
+                Uploading...
               </>
             ) : (
-              "Upload & Summarize"
+              "Upload"
             )}
           </Button>
         </form>

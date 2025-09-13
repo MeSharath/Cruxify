@@ -17,10 +17,11 @@ export default function DashboardPage() {
       // In a real app, this ID would be generated securely
       id: `new-book-${Math.random().toString(36).substring(2, 9)}`,
       title: fileName.replace(/\.epub$/, ""),
-      author: "New Author",
+      author: "Processing...",
       // Use a new random image for the cover
       coverImageUrl: `https://picsum.photos/seed/${Math.random()}/400/600`,
       imageHint: "book cover",
+      status: "processing",
     };
     setBooks((prevBooks) => [...prevBooks, newBook]);
   };
