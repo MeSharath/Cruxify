@@ -36,12 +36,13 @@ export async function generateAudioAction(
   text: string,
   userApiKey?: string
 ): Promise<{ success: boolean; audioDataUri?: string; error?: string }> {
-  const elevenLabsApiKey = userApiKey || process.env.ELEVENLABS_API_KEY;
+  // Prioritize server-side key, then user-provided key.
+  const elevenLabsApiKey = process.env.ELEVENLABS_API_KEY || userApiKey;
 
   if (!elevenLabsApiKey) {
     return {
       success: false,
-      error: "ElevenLabs API key not configured.",
+      error: "ElevenLabs API key not configured. Please add it via the Settings page or as an environment variable.",
     };
   }
 
@@ -67,9 +68,9 @@ export async function generateAudioAction(
     });
     
     if (!response.ok) {
-        const errorBody = await response.text();
+        const errorBody = await response.json();
         console.error("ElevenLabs API error response:", errorBody);
-        throw new Error(`Failed to generate audio: ${response.statusText} - ${errorBody}`);
+        throw new Error(`Failed to generate audio: ${errorBody.detail?.message || response.statusText}`);
     }
 
     const audioArrayBuffer = await response.arrayBuffer();
