@@ -5,11 +5,15 @@ type SummaryDisplayProps = {
 };
 
 const parseSummary = (text: string) => {
-  const sections = text.trim().split("### ").filter(Boolean);
+  const sections = text.trim().split(/\n?### /).filter(Boolean);
+  
   return sections.map((sectionText) => {
     const [title, ...contentParts] = sectionText.split("\n");
-    const content = contentParts.join("\n").trim();
-    
+    let content = contentParts.join("\n").trim();
+
+    // Replace markdown-style bold with <strong> tags
+    content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
     return {
       title: title.trim(),
       paragraphs: content.split("\n\n").filter((p) => p.trim() !== ""),
@@ -22,9 +26,6 @@ export function SummaryDisplay({ summary }: SummaryDisplayProps) {
 
   return (
     <Card className="shadow-2xl bg-transparent border-0">
-      <CardHeader>
-        <CardTitle className="font-headline text-foreground/80">AI Summary</CardTitle>
-      </CardHeader>
       <CardContent className="space-y-10 font-serif">
         {parsedSummary.map((section, index) => (
           <div key={index} className="space-y-4">
@@ -33,7 +34,7 @@ export function SummaryDisplay({ summary }: SummaryDisplayProps) {
             </h3>
             <div className="space-y-5 text-lg leading-relaxed text-foreground/90 text-justify">
               {section.paragraphs.map((p, pIndex) => (
-                <p key={pIndex}>{p}</p>
+                 <p key={pIndex} dangerouslySetInnerHTML={{ __html: p }} />
               ))}
             </div>
           </div>

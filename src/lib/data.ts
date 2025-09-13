@@ -69,7 +69,7 @@ export const userStats: UserStats = {
 
 export const summaries: Record<string, string> = {
   "atomic-habits": `
-### Key Insight 1: The Power of 1% Better
+### The Power of 1% Better
 The core idea of Atomic Habits is that small, incremental improvements compound over time to produce remarkable results. Clear argues that we should focus on getting 1% better every day rather than chasing massive, overnight success. This approach avoids burnout and makes progress sustainable.
 
 **Actionables (for building good habits):**
@@ -77,16 +77,16 @@ The core idea of Atomic Habits is that small, incremental improvements compound 
 - Use the "Two-Minute Rule": When starting a new habit, it should take less than two minutes to do.
 - Track your habits to build momentum and see the compounding effect visually.
 
-### Key Insight 2: The Four Laws of Behavior Change
+### The Four Laws of Behavior Change
 To build good habits and break bad ones, you need to understand the four-step pattern that habits follow: cue, craving, response, and reward. Clear translates this into four practical laws.
 
 **Actionables (for building good habits):**
 1.  **Make it Obvious (Cue):** Design your environment to make cues for good habits visible. Want to read more? Put a book on your pillow.
 2.  **Make it Attractive (Craving):** Pair an action you *want* to do with an action you *need* to do. This is called "temptation bundling."
-3.  **Make it Easy (Response):** Reduce friction. The less energy a habit requires, the more likely it is to happen.
+3.  **Make it Easy (Response):** Reduce a habit's friction. The less energy it requires, the more likely it is to happen.
 4.  **Make it Satisfying (Reward):** Give yourself an immediate reward when you complete your habit. This closes the habit loop.
 
-### Key Insight 3: Identity-Based Habits
+### Identity-Based Habits
 The most effective way to change your habits is to focus on who you wish to become, not just what you want to achieve. The goal isn't to *read a book*, it's to *become a reader*. Every action you take is a vote for the type of person you wish to be.
 
 **Actionables (for building good habits):**
