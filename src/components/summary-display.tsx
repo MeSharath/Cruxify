@@ -69,8 +69,14 @@ const renderContent = (item: ParsedContent, index: number) => {
       );
     case 'paragraph':
     default:
-      const sanitizedHtml = item.content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      return <div key={index} dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />;
+      // Split paragraphs by newlines and wrap each in a <p> tag
+      const paragraphs = item.content.split('\n').filter(p => p.trim() !== '');
+      return paragraphs.map((p, pIndex) => {
+        // Replace **word** with <strong>word</strong> and *word* with <em>word</em>
+        let sanitizedHtml = p.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        sanitizedHtml = sanitizedHtml.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        return <p key={`${index}-${pIndex}`} dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />;
+      });
   }
 };
 
