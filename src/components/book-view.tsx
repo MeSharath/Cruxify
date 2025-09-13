@@ -31,7 +31,7 @@ export function BookView({ summary }: { summary: string }) {
 
   return (
     <div className="relative">
-      <Card className="h-[40rem] rounded-lg shadow-2xl bg-card">
+      <Card className="rounded-lg shadow-2xl bg-card">
         {currentChapter && <SummaryDisplay chapter={currentChapter} />}
       </Card>
 

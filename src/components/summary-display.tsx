@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Lightbulb } from "lucide-react";
 
@@ -86,7 +87,7 @@ export function SummaryDisplay({ chapter }: { chapter: Chapter }) {
 
   return (
     <Card className="shadow-none bg-transparent border-0 h-full">
-      <CardContent className="font-serif text-lg text-justify leading-relaxed text-foreground/90 h-full overflow-y-auto p-8">
+      <CardContent className="font-serif text-lg text-justify leading-relaxed text-foreground/90 h-full overflow-y-hidden p-8">
         <div className="space-y-4">
           <h3 className="text-4xl font-bold tracking-tight text-primary/90 font-headline border-b-2 border-primary/20 pb-4">
             {chapter.title}
