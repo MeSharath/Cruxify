@@ -11,9 +11,9 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Headphones, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { generateAudioAction } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 import { BookView } from "@/components/book-view";
+import { audioData } from "@/lib/audio-data";
 
 export default function BookSummaryPage({ params }: { params: { id: string } }) {
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
@@ -23,40 +23,26 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
 
   const book = books.find((b) => b.id === params.id);
   const summary = summaries[params.id];
+  const preGeneratedAudio = audioData[params.id];
 
   const handleGenerateAudio = async () => {
-    if (!summary) return;
+    if (!preGeneratedAudio) {
+      toast({
+        title: "Audio Not Available",
+        description: "An audio version for this book is not available at this time.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsLoadingAudio(true);
     setAudioGenerationStarted(true);
-    try {
-      // No longer sending the user API key from local storage
-      const result = await generateAudioAction(summary);
-      
-      if (result.success && result.audioDataUri) {
-        setAudioSrc(result.audioDataUri);
-      } else {
-        // Display the specific error from the server action
-        console.error("Failed to generate audio:", result.error);
-        toast({
-          title: "Audio Generation Failed",
-          description: result.error || "An unknown error occurred.",
-          variant: "destructive",
-        });
-        setAudioSrc(null);
-      }
-    } catch (error) {
-      console.error("Error calling generateAudioAction:", error);
-      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred.";
-      toast({
-        title: "Audio Generation Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-      setAudioSrc(null);
-    } finally {
+
+    // Simulate the "illusion" of generating audio with a delay
+    setTimeout(() => {
+      setAudioSrc(preGeneratedAudio);
       setIsLoadingAudio(false);
-    }
+    }, 3000); // 3-second delay
   };
 
   if (!book || !summary) {
@@ -126,4 +112,3 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
     </MainLayout>
   );
 }
-
