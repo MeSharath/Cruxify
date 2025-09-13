@@ -6,6 +6,7 @@ import { SummaryDisplay, parseSummary, type Chapter } from "./summary-display";
 import { Button } from "./ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Card } from "./ui/card";
+import { Progress } from "./ui/progress";
 
 export function BookView({ summary }: { summary: string }) {
   const [currentPage, setCurrentPage] = useState(0);
@@ -28,6 +29,7 @@ export function BookView({ summary }: { summary: string }) {
   }
 
   const currentChapter = chapters[currentPage];
+  const progressPercentage = ((currentPage + 1) / chapters.length) * 100;
 
   return (
     <div className="relative">
@@ -63,6 +65,8 @@ export function BookView({ summary }: { summary: string }) {
        <div className="text-center mt-4 font-sans text-sm text-muted-foreground">
         Page {currentPage + 1} of {chapters.length}
       </div>
+
+      <Progress value={progressPercentage} className="mt-2 h-1" />
     </div>
   );
 }
