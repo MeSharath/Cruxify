@@ -8,16 +8,19 @@ import Image from "next/image";
 import { AudioPlayer } from "@/components/audio-player";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Headphones, Loader2, MicOff } from "lucide-react";
+import { ArrowLeft, Headphones, Loader2, MicOff, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { BookView } from "@/components/book-view";
 import { useToast } from "@/hooks/use-toast";
-import { generateAudioAction } from "@/app/actions";
+import { getPreGeneratedAudio } from "@/app/actions";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function BookSummaryPage({ params }: { params: { id: string } }) {
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
+  const [audioAvailable, setAudioAvailable] = useState<boolean | null>(null);
+
   const { toast } = useToast();
 
   const book = books.find((b) => b.id === params.id);
@@ -26,28 +29,29 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
   if (!book || !summary) {
     notFound();
   }
-  
-  const hasAudio = true; // All books can attempt to generate audio.
 
   const handleGenerateAudio = async () => {
     setIsLoadingAudio(true);
     try {
-      const result = await generateAudioAction({ text: summary, bookId: book.id });
+      const result = await getPreGeneratedAudio(book.id);
 
       if (result.success && result.audioData) {
         setAudioSrc(result.audioData);
+        setAudioAvailable(true);
       } else {
+        setAudioAvailable(false);
         toast({
           variant: "destructive",
-          title: "Audio Generation Failed",
-          description: result.error || "An unknown error occurred.",
+          title: "Audio Not Available",
+          description: result.error || "An audio version could not be found for this book.",
         });
       }
     } catch (error) {
+       setAudioAvailable(false);
        toast({
           variant: "destructive",
-          title: "Audio Generation Failed",
-          description: error instanceof Error ? error.message : "An unexpected client-side error occurred.",
+          title: "An Error Occurred",
+          description: "Could not retrieve the audio summary. Please try again later.",
         });
     } finally {
         setIsLoadingAudio(false);
@@ -88,21 +92,33 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
                   <p className="text-muted-foreground text-lg mt-1 font-sans">{book.author}</p>
                   <div className="flex flex-wrap gap-2 mt-4 font-sans">
                     <Badge variant="secondary">15-min Summary</Badge>
-                    {hasAudio && <Badge variant="secondary">Audio Available</Badge>}
+                    <Badge variant="secondary">Audio Available</Badge>
                   </div>
                   <div className="mt-6 font-sans">
-                      {!audioSrc && !isLoadingAudio ? (
+                      {audioSrc && <AudioPlayer audioSrc={audioSrc} />}
+
+                      {!audioSrc && !isLoadingAudio && audioAvailable !== false && (
                         <Button onClick={handleGenerateAudio} className="w-full">
                           <Headphones className="mr-2 size-4" />
-                          I'd rather listen to it
+                          Listen to Summary
                         </Button>
-                      ) : isLoadingAudio ? (
-                        <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg">
-                          <Loader2 className="size-8 animate-spin text-muted-foreground" />
+                      )}
+
+                      {isLoadingAudio && (
+                        <div className="flex items-center justify-center h-24 bg-card rounded-lg shadow-inner">
+                          <Loader2 className="size-6 animate-spin text-muted-foreground" />
                           <p className="ml-4 text-muted-foreground">Generating audio...</p>
                         </div>
-                      ) : (
-                        audioSrc ? <AudioPlayer audioSrc={audioSrc} /> : null
+                      )}
+
+                      {audioAvailable === false && !isLoadingAudio && (
+                         <Alert variant="destructive" className="bg-destructive/10 border-destructive/30 text-destructive-foreground">
+                            <AlertCircle className="h-4 w-4 !text-destructive" />
+                            <AlertTitle className="text-destructive">Audio Not Available</AlertTitle>
+                            <AlertDescription className="text-destructive/90">
+                                An audio version for this book is not yet available.
+                            </AlertDescription>
+                        </Alert>
                       )}
                     </div>
                 </div>

@@ -2,7 +2,8 @@
 "use server";
 
 import { generateBookSummary } from "@/ai/flows/generate-book-summary";
-import { summaries } from "@/lib/data";
+import { summaries, audioData } from "@/lib/data";
+import { preGeneratedAudio } from "@/lib/audio-data";
 
 export async function handleFileUpload(
   formData: FormData
@@ -33,76 +34,34 @@ export async function handleFileUpload(
   }
 }
 
-type GenerateAudioInput = {
-  text: string;
-  bookId: string;
-};
-
-type GenerateAudioOutput = {
+type GetAudioOutput = {
   success: boolean;
   audioData?: string;
   error?: string;
 };
 
-export async function generateAudioAction(
-  input: GenerateAudioInput
-): Promise<GenerateAudioOutput> {
-  const apiKey = process.env.ELEVENLABS_API_KEY;
+// This function simulates fetching pre-generated audio from a backend store.
+export async function getPreGeneratedAudio(
+  bookId: string
+): Promise<GetAudioOutput> {
+  console.log(`Searching for pre-generated audio for book ID: ${bookId}`);
+  
+  // Simulate network/database latency
+  await new Promise(resolve => setTimeout(resolve, 2500));
 
-  if (!apiKey) {
-    const errorMessage = "ElevenLabs API key is not configured on the server.";
-    console.error(errorMessage);
+  const audio = preGeneratedAudio[bookId];
+
+  if (audio) {
+    console.log(`Audio found for ${bookId}.`);
     return {
-      success: false,
-      error: errorMessage,
+      success: true,
+      audioData: audio,
     };
-  }
-
-  const voiceId = "21m00Tcm4TlvDq8ikWAM"; // A default voice, can be customized
-  const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
-
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "xi-api-key": apiKey,
-      },
-      body: JSON.stringify({
-        text: input.text,
-        model_id: "eleven_multilingual_v2",
-        voice_settings: {
-          stability: 0.5,
-          similarity_boost: 0.75,
-        },
-      }),
-    });
-
-    if (!response.ok) {
-      const errorBody = await response.json();
-      console.error("ElevenLabs API error response:", errorBody);
-      const errorMessage =
-        errorBody.detail?.message ||
-        `API Error: ${response.status} ${response.statusText}`;
-      return {
-        success: false,
-        error: `Failed to generate audio: ${errorMessage}`,
-      };
-    }
-
-    const audioArrayBuffer = await response.arrayBuffer();
-    const audioBase64 = Buffer.from(audioArrayBuffer).toString("base64");
-    const audioDataUri = `data:audio/mpeg;base64,${audioBase64}`;
-
-    return { success: true, audioData: audioDataUri };
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "An unknown error occurred.";
-    console.error("Failed to generate audio:", errorMessage);
+  } else {
+    console.log(`No pre-generated audio found for ${bookId}.`);
     return {
       success: false,
-      error: `Failed to generate audio: ${errorMessage}`,
+      error: "An audio summary is not yet available for this book.",
     };
   }
 }
-
