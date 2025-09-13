@@ -25,20 +25,22 @@ export async function handleFileUpload(
     return { success: true };
   } catch (error) {
     console.error("File upload failed:", error);
+    const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred during summarization.";
     return {
       success: false,
-      error: "An unexpected error occurred during summarization.",
+      error: errorMessage,
     };
   }
 }
 
 export async function generateAudioAction(
-  text: string
+  text: string,
+  userApiKey?: string
 ): Promise<{ success: boolean; audioDataUri?: string; error?: string }> {
-  const elevenLabsApiKey = process.env.ELEVENLABS_API_KEY;
+  const elevenLabsApiKey = userApiKey || process.env.ELEVENLABS_API_KEY;
 
   if (!elevenLabsApiKey) {
-    return { success: false, error: "ElevenLabs API key is not configured." };
+    return { success: false, error: "ElevenLabs API key is not configured. Please add it on the Settings page." };
   }
 
   const voice = new ElevenLabs({
@@ -64,6 +66,6 @@ export async function generateAudioAction(
     return { success: true, audioDataUri };
   } catch (error) {
     console.error("ElevenLabs API error:", error);
-    return { success: false, error: "Failed to generate audio from ElevenLabs." };
+    return { success: false, error: "Failed to generate audio from ElevenLabs. Please check your API key and subscription status." };
   }
 }

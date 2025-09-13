@@ -13,10 +13,12 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { generateAudioAction } from "@/app/actions";
+import { useToast } from "@/hooks/use-toast";
 
 export default function BookSummaryPage({ params }: { params: { id: string } }) {
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
   const [isLoadingAudio, setIsLoadingAudio] = useState(true);
+  const { toast } = useToast();
 
   const book = books.find((b) => b.id === params.id);
   const summary = summaries[params.id];
@@ -27,24 +29,34 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
     const getAudio = async () => {
       setIsLoadingAudio(true);
       try {
-        const result = await generateAudioAction(summary);
+        const userApiKey = localStorage.getItem("elevenlabs_api_key") || undefined;
+        const result = await generateAudioAction(summary, userApiKey);
         if (result.success && result.audioDataUri) {
           setAudioSrc(result.audioDataUri);
         } else {
           console.error("Failed to generate audio:", result.error);
-          // Fallback to placeholder if generation fails
-          setAudioSrc("/placeholder-audio.mp3");
+          toast({
+            title: "Audio Generation Failed",
+            description: result.error,
+            variant: "destructive",
+          });
+          setAudioSrc(null); // Set to null if generation fails
         }
       } catch (error) {
         console.error("Error calling generateAudioAction:", error);
-        setAudioSrc("/placeholder-audio.mp3");
+        toast({
+            title: "Audio Generation Failed",
+            description: "An unexpected error occurred.",
+            variant: "destructive",
+          });
+        setAudioSrc(null);
       } finally {
         setIsLoadingAudio(false);
       }
     };
 
     getAudio();
-  }, [summary]);
+  }, [summary, toast]);
 
   if (!book || !summary) {
     notFound();
@@ -82,7 +94,7 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
                 <p className="text-muted-foreground mt-1">{book.author}</p>
                 <div className="flex flex-wrap gap-2 mt-4">
                   <Badge variant="secondary">15-min Summary</Badge>
-                  <Badge variant="secondary">Audio Available</Badge>
+                  {audioSrc && <Badge variant="secondary">Audio Available</Badge>}
                 </div>
               </div>
             </div>
@@ -94,7 +106,7 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
                    <p className="ml-4 text-muted-foreground">Generating audio...</p>
                 </div>
               ) : (
-                audioSrc && <AudioPlayer audioSrc={audioSrc} />
+                audioSrc ? <AudioPlayer audioSrc={audioSrc} /> : <div className="flex items-center justify-center h-48 bg-card rounded-lg"><p className="text-muted-foreground">Audio could not be generated.</p></div>
               )}
               <SummaryDisplay summary={summary} />
             </div>

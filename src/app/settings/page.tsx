@@ -25,21 +25,27 @@ import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function SettingsPage() {
-  const [apiKey, setApiKey] = useState("");
+  const [perplexityApiKey, setPerplexityApiKey] = useState("");
+  const [elevenLabsApiKey, setElevenLabsApiKey] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
-    const storedKey = localStorage.getItem("perplexity_api_key");
-    if (storedKey) {
-      setApiKey(storedKey);
+    const storedPerplexityKey = localStorage.getItem("perplexity_api_key");
+    if (storedPerplexityKey) {
+      setPerplexityApiKey(storedPerplexityKey);
+    }
+    const storedElevenLabsKey = localStorage.getItem("elevenlabs_api_key");
+    if (storedElevenLabsKey) {
+      setElevenLabsApiKey(storedElevenLabsKey);
     }
   }, []);
 
-  const handleSaveApiKey = () => {
-    localStorage.setItem("perplexity_api_key", apiKey);
+  const handleSaveKeys = () => {
+    localStorage.setItem("perplexity_api_key", perplexityApiKey);
+    localStorage.setItem("elevenlabs_api_key", elevenLabsApiKey);
     toast({
-      title: "API Key Saved",
-      description: "Your Perplexity API key has been saved locally.",
+      title: "API Keys Saved",
+      description: "Your API keys have been saved locally in your browser.",
     });
   };
 
@@ -48,7 +54,7 @@ export default function SettingsPage() {
       <div className="p-4 md:p-8">
         <PageHeader
           title="Settings"
-          description="Manage your account and notification preferences."
+          description="Manage your API keys and application preferences."
         />
 
         <div className="max-w-2xl grid gap-6">
@@ -56,22 +62,32 @@ export default function SettingsPage() {
             <CardHeader>
               <CardTitle>API Configuration</CardTitle>
               <CardDescription>
-                Provide your own Perplexity API key to use for summaries. This
-                is stored securely in your browser.
+                Provide your own API keys to use the services. Keys are
+                stored securely in your browser and are never sent to our servers.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="api-key">Perplexity API Key</Label>
+                <Label htmlFor="perplexity-api-key">Perplexity API Key</Label>
                 <Input
-                  id="api-key"
+                  id="perplexity-api-key"
                   type="password"
                   placeholder="Your Perplexity API Key"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
+                  value={perplexityApiKey}
+                  onChange={(e) => setPerplexityApiKey(e.target.value)}
                 />
               </div>
-              <Button onClick={handleSaveApiKey}>Save API Key</Button>
+              <div className="space-y-2">
+                <Label htmlFor="elevenlabs-api-key">ElevenLabs API Key</Label>
+                <Input
+                  id="elevenlabs-api-key"
+                  type="password"
+                  placeholder="Your ElevenLabs API Key"
+                  value={elevenLabsApiKey}
+                  onChange={(e) => setElevenLabsApiKey(e.target.value)}
+                />
+              </div>
+              <Button onClick={handleSaveKeys}>Save API Keys</Button>
             </CardContent>
           </Card>
 
