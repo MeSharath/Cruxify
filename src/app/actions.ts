@@ -2,7 +2,7 @@
 "use server";
 
 import { generateBookSummary } from "@/ai/flows/generate-book-summary";
-import ElevenLabs from "elevenlabs-node";
+import { ElevenLabsClient } from "elevenlabs-node";
 
 export async function handleFileUpload(
   formData: FormData
@@ -43,18 +43,18 @@ export async function generateAudioAction(
     return { success: false, error: "ElevenLabs API key is not configured. Please add it on the Settings page." };
   }
 
-  const voice = new ElevenLabs({
+  const elevenlabs = new ElevenLabsClient({
     apiKey: elevenLabsApiKey,
   });
 
   try {
-    const audioStream = await voice.textToSpeechStream({
-      textInput: text,
-      voiceId: "21m00Tcm4TlvDq8ikWAM", // Rachel
-      modelId: "eleven_multilingual_v2",
-       outputFormat: "mp3_44100_128",
+    const audioStream = await elevenlabs.generate({
+      stream: true,
+      voice: "Rachel",
+      model_id: "eleven_multilingual_v2",
+      text,
     });
-
+    
     const chunks: Buffer[] = [];
     for await (const chunk of audioStream) {
       chunks.push(chunk);
