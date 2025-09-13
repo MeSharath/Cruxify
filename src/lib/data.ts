@@ -54,10 +54,10 @@ export const books: Book[] = [
 
 export const userStats: UserStats = {
   dailyGoal: 1,
-  weeklyStreak: 4,
-  longestStreak: 12,
-  booksCompleted: 18,
-  badges: ["Streak Starter", "5-Day Streak", "Bookworm"],
+  weeklyStreak: 0,
+  longestStreak: 0,
+  booksCompleted: books.length,
+  badges: [],
 };
 
 export const summaries: Record<string, string> = {
@@ -65,7 +65,7 @@ export const summaries: Record<string, string> = {
 ### Key Insight 1: The Power of 1% Better
 The core idea of Atomic Habits is that small, incremental improvements compound over time to produce remarkable results. Clear argues that we should focus on getting 1% better every day rather than chasing massive, overnight success. This approach avoids burnout and makes progress sustainable.
 
-**Actionables:**
+**Actionables (for building good habits):**
 - Start with a habit that is "so easy you can't say no." For example, read one page of a book each day.
 - Use the "Two-Minute Rule": When starting a new habit, it should take less than two minutes to do.
 - Track your habits to build momentum and see the compounding effect visually.
@@ -82,7 +82,7 @@ To build good habits and break bad ones, you need to understand the four-step pa
 ### Key Insight 3: Identity-Based Habits
 The most effective way to change your habits is to focus on who you wish to become, not just what you want to achieve. The goal isn't to *read a book*, it's to *become a reader*. Every action you take is a vote for the type of person you wish to be.
 
-**Actionables:**
+**Actionables (for building good habits):**
 - Define the type of person you want to be (e.g., "I am a healthy person," "I am a writer").
 - Ask yourself, "What would a healthy person do?" Use this to guide your small, daily actions.
 - Celebrate every small win as proof of your new identity.

@@ -5,7 +5,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Flame, Star, BookCheck, Trophy } from "lucide-react";
+import { Flame, BookCheck, Trophy } from "lucide-react";
 import { userStats } from "@/lib/data";
 
 export function HabitTrackerCard() {
@@ -24,15 +24,9 @@ export function HabitTrackerCard() {
     },
     {
       icon: BookCheck,
-      label: "Books Completed",
+      label: "Books in Library",
       value: userStats.booksCompleted,
       color: "text-green-400",
-    },
-    {
-      icon: Star,
-      label: "Badges Earned",
-      value: userStats.badges.length,
-      color: "text-sky-400",
     },
   ];
 
@@ -45,7 +39,7 @@ export function HabitTrackerCard() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {stats.map((stat, index) => (
             <div
               key={index}
