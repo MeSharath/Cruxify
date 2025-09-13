@@ -3,7 +3,6 @@
 
 import { MainLayout } from "@/components/main-layout";
 import { books, summaries } from "@/lib/data";
-import { audioData } from "@/lib/audio-data";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { AudioPlayer } from "@/components/audio-player";
@@ -13,35 +12,47 @@ import { ArrowLeft, Headphones, Loader2, MicOff } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { BookView } from "@/components/book-view";
+import { useToast } from "@/hooks/use-toast";
+import { generateAudioAction } from "@/app/actions";
 
 export default function BookSummaryPage({ params }: { params: { id: string } }) {
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
-  const [showNoAudioMessage, setShowNoAudioMessage] = useState(false);
+  const { toast } = useToast();
 
   const book = books.find((b) => b.id === params.id);
   const summary = summaries[params.id];
-  const bookAudio = audioData.find((a) => a.id === params.id);
-  const hasAudio = !!bookAudio;
-
-
-  const handleGenerateAudio = async () => {
-    if (!bookAudio) {
-      setShowNoAudioMessage(true);
-      return;
-    }
-
-    setIsLoadingAudio(true);
-    // Simulate a network delay for the "illusion of generation"
-    setTimeout(() => {
-      setAudioSrc(bookAudio.data);
-      setIsLoadingAudio(false);
-    }, 2500);
-  };
-
+  
   if (!book || !summary) {
     notFound();
   }
+  
+  const hasAudio = true; // All books can attempt to generate audio.
+
+  const handleGenerateAudio = async () => {
+    setIsLoadingAudio(true);
+    try {
+      const result = await generateAudioAction({ text: summary, bookId: book.id });
+
+      if (result.success && result.audioData) {
+        setAudioSrc(result.audioData);
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Audio Generation Failed",
+          description: result.error || "An unknown error occurred.",
+        });
+      }
+    } catch (error) {
+       toast({
+          variant: "destructive",
+          title: "Audio Generation Failed",
+          description: error instanceof Error ? error.message : "An unexpected client-side error occurred.",
+        });
+    } finally {
+        setIsLoadingAudio(false);
+    }
+  };
 
 
   return (
@@ -92,12 +103,6 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
                         </div>
                       ) : (
                         audioSrc ? <AudioPlayer audioSrc={audioSrc} /> : null
-                      )}
-                      {showNoAudioMessage && (
-                        <div className="flex flex-col items-center justify-center h-48 bg-card rounded-lg shadow-lg mt-4">
-                           <MicOff className="size-8 text-muted-foreground" />
-                          <p className="mt-4 text-muted-foreground text-center px-4">An audio version for this book is not available yet.</p>
-                        </div>
                       )}
                     </div>
                 </div>
