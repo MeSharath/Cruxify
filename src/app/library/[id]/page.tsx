@@ -64,51 +64,53 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
 
   return (
     <MainLayout>
-      <div className="p-4 md:p-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-6">
-            <Button asChild variant="ghost">
-              <Link href="/">
-                <ArrowLeft className="mr-2 size-4" />
-                Back to Library
-              </Link>
-            </Button>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="md:col-span-1">
-              <div className="sticky top-24">
-                <div className="aspect-[2/3] w-full max-w-[250px] mx-auto md:mx-0 relative mb-4 rounded-lg overflow-hidden shadow-lg">
-                  <Image
-                    src={book.coverImageUrl}
-                    alt={`Cover of ${book.title}`}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 80vw, 250px"
-                    data-ai-hint={book.imageHint}
-                  />
-                </div>
-                <h1 className="text-2xl font-bold leading-tight">
-                  {book.title}
-                </h1>
-                <p className="text-muted-foreground mt-1">{book.author}</p>
-                <div className="flex flex-wrap gap-2 mt-4">
-                  <Badge variant="secondary">15-min Summary</Badge>
-                  {audioSrc && <Badge variant="secondary">Audio Available</Badge>}
-                </div>
-              </div>
+      <div className="bg-background text-foreground">
+        <div className="p-4 md:p-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="mb-6">
+              <Button asChild variant="ghost">
+                <Link href="/">
+                  <ArrowLeft className="mr-2 size-4" />
+                  Back to Library
+                </Link>
+              </Button>
             </div>
 
-            <div className="md:col-span-2 space-y-6">
-              {isLoadingAudio ? (
-                <div className="flex items-center justify-center h-48 bg-card rounded-lg">
-                  <Loader2 className="size-8 animate-spin text-muted-foreground" />
-                   <p className="ml-4 text-muted-foreground">Generating audio...</p>
+            <div className="grid md:grid-cols-3 gap-8 items-start">
+              <div className="md:col-span-1">
+                <div className="sticky top-24">
+                  <div className="aspect-[2/3] w-full max-w-[250px] mx-auto md:mx-0 relative mb-4 rounded-lg overflow-hidden shadow-2xl">
+                    <Image
+                      src={book.coverImageUrl}
+                      alt={`Cover of ${book.title}`}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 80vw, 250px"
+                      data-ai-hint={book.imageHint}
+                    />
+                  </div>
+                  <h1 className="text-3xl font-bold leading-tight font-headline">
+                    {book.title}
+                  </h1>
+                  <p className="text-muted-foreground text-lg mt-1">{book.author}</p>
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    <Badge variant="secondary">15-min Summary</Badge>
+                    {audioSrc && <Badge variant="secondary">Audio Available</Badge>}
+                  </div>
                 </div>
-              ) : (
-                audioSrc ? <AudioPlayer audioSrc={audioSrc} /> : <div className="flex items-center justify-center h-48 bg-card rounded-lg"><p className="text-muted-foreground">Audio could not be generated.</p></div>
-              )}
-              <SummaryDisplay summary={summary} />
+              </div>
+
+              <div className="md:col-span-2 space-y-6">
+                {isLoadingAudio ? (
+                  <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg">
+                    <Loader2 className="size-8 animate-spin text-muted-foreground" />
+                    <p className="ml-4 text-muted-foreground">Generating audio...</p>
+                  </div>
+                ) : (
+                  audioSrc ? <AudioPlayer audioSrc={audioSrc} /> : <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg"><p className="text-muted-foreground">Audio could not be generated.</p></div>
+                )}
+                <SummaryDisplay summary={summary} />
+              </div>
             </div>
           </div>
         </div>

@@ -34,26 +34,26 @@ export function SummaryDisplay({ summary }: SummaryDisplayProps) {
   const parsedSummary = parseSummary(summary);
 
   return (
-    <Card>
+    <Card className="shadow-2xl">
       <CardHeader>
-        <CardTitle>AI Summary</CardTitle>
+        <CardTitle className="font-headline">AI Summary</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-8">
+      <CardContent className="space-y-10 font-serif">
         {parsedSummary.map((section, index) => (
           <div key={index} className="space-y-4">
-            <h3 className="text-xl font-semibold tracking-tight text-primary">
+            <h3 className="text-2xl font-bold tracking-tight text-primary font-headline">
               {section.title}
             </h3>
-            <div className="space-y-3 text-base leading-relaxed text-foreground/90">
+            <div className="space-y-5 text-lg leading-relaxed text-foreground/90 text-justify">
               {section.paragraphs.map((p, pIndex) => (
                 <p key={pIndex}>{p}</p>
               ))}
               {section.actionItems.length > 0 && (
-                <div className="mt-4 rounded-lg bg-secondary p-4">
-                  <h4 className="font-semibold text-foreground mb-2">
+                <div className="mt-6 rounded-lg bg-secondary/50 p-6 font-body">
+                  <h4 className="font-semibold text-foreground mb-3 text-base">
                     Actionables:
                   </h4>
-                  <ul className="list-disc pl-5 space-y-2">
+                  <ul className="list-disc pl-5 space-y-2 text-base">
                     {section.actionItems.map((item, itemIndex) => (
                       <li key={itemIndex}>{item}</li>
                     ))}
