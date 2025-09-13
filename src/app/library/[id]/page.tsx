@@ -97,19 +97,20 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
                     <Badge variant="secondary">15-min Summary</Badge>
                     {audioSrc && <Badge variant="secondary">Audio Available</Badge>}
                   </div>
+                  <div className="mt-6 font-sans">
+                    {isLoadingAudio ? (
+                      <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg">
+                        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+                        <p className="ml-4 text-muted-foreground">Generating audio...</p>
+                      </div>
+                    ) : (
+                      audioSrc ? <AudioPlayer audioSrc={audioSrc} /> : <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg"><p className="text-muted-foreground">Audio could not be generated.</p></div>
+                    )}
+                  </div>
                 </div>
               </div>
 
               <div className="md:col-span-2 space-y-6 mt-8 md:mt-0">
-                {isLoadingAudio ? (
-                  <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg font-sans">
-                    <Loader2 className="size-8 animate-spin text-muted-foreground" />
-                    <p className="ml-4 text-muted-foreground">Generating audio...</p>
-                  </div>
-                ) : (
-                  audioSrc ? <AudioPlayer audioSrc={audioSrc} /> : <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg font-sans"><p className="text-muted-foreground">Audio could not be generated.</p></div>
-                )}
-                
                 <BookView summary={summary} />
               </div>
             </div>
