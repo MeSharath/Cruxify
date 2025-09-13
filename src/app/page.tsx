@@ -1,16 +1,26 @@
 
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MainLayout } from "@/components/main-layout";
 import { PageHeader } from "@/components/page-header";
 import { BookUploadButton } from "@/components/book-upload-button";
 import { HabitTrackerCard } from "@/components/habit-tracker-card";
 import { BookCard } from "@/components/book-card";
 import { books as initialBooks, type Book } from "@/lib/data";
+import { QuoteOfTheDayCard } from "@/components/quote-of-the-day-card";
+import { quotes, type Quote } from "@/lib/quotes";
 
 export default function DashboardPage() {
   const [books, setBooks] = useState<Book[]>(initialBooks);
+  const [quote, setQuote] = useState<Quote | null>(null);
+
+  useEffect(() => {
+    // Select a random quote when the component mounts
+    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    setQuote(randomQuote);
+  }, []);
+
 
   const handleBookUploaded = (fileName: string) => {
     const newBook: Book = {
@@ -36,6 +46,8 @@ export default function DashboardPage() {
         />
 
         <div className="space-y-8">
+          {quote && <QuoteOfTheDayCard quote={quote} />}
+
           <HabitTrackerCard booksInLibrary={books.length} />
 
           <div>
