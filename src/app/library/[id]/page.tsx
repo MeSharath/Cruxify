@@ -3,59 +3,46 @@
 
 import { MainLayout } from "@/components/main-layout";
 import { books, summaries } from "@/lib/data";
+import { audioData } from "@/lib/audio-data";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { AudioPlayer } from "@/components/audio-player";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Headphones, Loader2 } from "lucide-react";
+import { ArrowLeft, Headphones, Loader2, MicOff } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 import { BookView } from "@/components/book-view";
-import { generateAudioAction } from "@/app/actions";
 
 export default function BookSummaryPage({ params }: { params: { id: string } }) {
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
-  const { toast } = useToast();
+  const [showNoAudioMessage, setShowNoAudioMessage] = useState(false);
 
   const book = books.find((b) => b.id === params.id);
   const summary = summaries[params.id];
+  const bookAudio = audioData.find((a) => a.id === params.id);
+  const hasAudio = !!bookAudio;
+
 
   const handleGenerateAudio = async () => {
-    setIsLoadingAudio(true);
-    try {
-      const result = await generateAudioAction(params.id);
-
-      if (result.success) {
-        setAudioSrc(result.audioData);
-      } else {
-        toast({
-          title: "Audio Generation Failed",
-          description: result.error,
-          variant: "destructive",
-        });
-        setAudioSrc(null); // Clear any previous audio
-      }
-    } catch (error) {
-      console.error("Failed to generate audio:", error);
-      toast({
-        title: "Audio Generation Failed",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive",
-      });
-      setAudioSrc(null); // Clear any previous audio
-    } finally {
-      setIsLoadingAudio(false);
+    if (!bookAudio) {
+      setShowNoAudioMessage(true);
+      return;
     }
+
+    setIsLoadingAudio(true);
+    // Simulate a network delay for the "illusion of generation"
+    setTimeout(() => {
+      setAudioSrc(bookAudio.data);
+      setIsLoadingAudio(false);
+    }, 2500);
   };
 
   if (!book || !summary) {
     notFound();
   }
 
-  const hasAudio = true; // We assume all books can have audio generated
 
   return (
     <MainLayout>
@@ -92,8 +79,7 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
                     <Badge variant="secondary">15-min Summary</Badge>
                     {hasAudio && <Badge variant="secondary">Audio Available</Badge>}
                   </div>
-                  {hasAudio && (
-                    <div className="mt-6 font-sans">
+                  <div className="mt-6 font-sans">
                       {!audioSrc && !isLoadingAudio ? (
                         <Button onClick={handleGenerateAudio} className="w-full">
                           <Headphones className="mr-2 size-4" />
@@ -105,10 +91,15 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
                           <p className="ml-4 text-muted-foreground">Generating audio...</p>
                         </div>
                       ) : (
-                        audioSrc ? <AudioPlayer audioSrc={audioSrc} /> : <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg"><p className="text-muted-foreground text-center p-4">Audio could not be generated. Please try again later.</p></div>
+                        audioSrc ? <AudioPlayer audioSrc={audioSrc} /> : null
+                      )}
+                      {showNoAudioMessage && (
+                        <div className="flex flex-col items-center justify-center h-48 bg-card rounded-lg shadow-lg mt-4">
+                           <MicOff className="size-8 text-muted-foreground" />
+                          <p className="mt-4 text-muted-foreground text-center px-4">An audio version for this book is not available yet.</p>
+                        </div>
                       )}
                     </div>
-                  )}
                 </div>
               </div>
 
