@@ -49,6 +49,8 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
     notFound();
   }
 
+  const hasAudio = !!preGeneratedAudio;
+
   return (
     <MainLayout>
       <div className="bg-background text-foreground font-serif">
@@ -82,23 +84,25 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
                   <p className="text-muted-foreground text-lg mt-1 font-sans">{book.author}</p>
                   <div className="flex flex-wrap gap-2 mt-4 font-sans">
                     <Badge variant="secondary">15-min Summary</Badge>
-                    {audioSrc && <Badge variant="secondary">Audio Available</Badge>}
+                    {hasAudio && <Badge variant="secondary">Audio Available</Badge>}
                   </div>
-                  <div className="mt-6 font-sans">
-                    {!audioGenerationStarted ? (
-                      <Button onClick={handleGenerateAudio} className="w-full">
-                        <Headphones className="mr-2 size-4" />
-                        I'd rather listen to it
-                      </Button>
-                    ) : isLoadingAudio ? (
-                      <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg">
-                        <Loader2 className="size-8 animate-spin text-muted-foreground" />
-                        <p className="ml-4 text-muted-foreground">Generating audio...</p>
-                      </div>
-                    ) : (
-                      audioSrc ? <AudioPlayer audioSrc={audioSrc} /> : <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg"><p className="text-muted-foreground text-center p-4">Audio could not be generated. Please try again later.</p></div>
-                    )}
-                  </div>
+                  {hasAudio && (
+                    <div className="mt-6 font-sans">
+                      {!audioGenerationStarted ? (
+                        <Button onClick={handleGenerateAudio} className="w-full">
+                          <Headphones className="mr-2 size-4" />
+                          I'd rather listen to it
+                        </Button>
+                      ) : isLoadingAudio ? (
+                        <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg">
+                          <Loader2 className="size-8 animate-spin text-muted-foreground" />
+                          <p className="ml-4 text-muted-foreground">Generating audio...</p>
+                        </div>
+                      ) : (
+                        audioSrc ? <AudioPlayer audioSrc={audioSrc} /> : <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg"><p className="text-muted-foreground text-center p-4">Audio could not be generated. Please try again later.</p></div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
