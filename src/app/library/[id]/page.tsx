@@ -110,7 +110,7 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
                         <p className="ml-4 text-muted-foreground">Generating audio...</p>
                       </div>
                     ) : (
-                      audioSrc ? <AudioPlayer audioSrc={audioSrc} /> : <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg"><p className="text-muted-foreground text-center p-4">Audio could not be generated. Please check your API key and try again.</p></div>
+                      audioSrc ? <AudioPlayer audioSrc={audioSrc} /> : <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg"><p className="text-muted-foreground text-center p-4">Audio could not be generated. Please try again later.</p></div>
                     )}
                   </div>
                 </div>
