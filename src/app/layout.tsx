@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Cruxify Summarizer",
+  title: "Cruxify",
   description: "Get AI-powered summaries of your books.",
 };
 
