@@ -15,9 +15,28 @@ import {
   SidebarProvider,
   SidebarFooter,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Logo } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
+
+function UserProfile() {
+    const { state } = useSidebar();
+    return (
+         <div className={cn("flex items-center gap-3 p-2", state === 'collapsed' && 'justify-center')}>
+            <Avatar className="size-9">
+              <AvatarImage src="https://picsum.photos/seed/avatar/40/40" data-ai-hint="person face" />
+              <AvatarFallback>
+                <User />
+              </AvatarFallback>
+            </Avatar>
+            <div className={cn("flex flex-col transition-opacity duration-200", state === 'collapsed' ? 'opacity-0 w-0' : 'opacity-100')}>
+              <span className="font-medium text-sm truncate">User</span>
+            </div>
+          </div>
+    )
+}
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -32,7 +51,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         <SidebarHeader className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo className="size-8 text-primary" />
-            <span className="text-lg font-semibold">Cruxify</span>
+            <span className="text-lg font-semibold group-data-[collapsible=icon]:hidden">Cruxify</span>
           </Link>
           <SidebarTrigger className="hidden md:flex" />
         </SidebarHeader>
@@ -57,17 +76,17 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
-          <div className="flex items-center gap-3 p-2">
-            <Avatar className="size-9">
-              <AvatarImage src="https://picsum.photos/seed/avatar/40/40" data-ai-hint="person face" />
-              <AvatarFallback>
-                <User />
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col">
-              <span className="font-medium text-sm">User</span>
+            <div className="flex items-center gap-3 p-2 group-data-[collapsible=icon]:justify-center">
+                <Avatar className="size-9">
+                <AvatarImage src="https://picsum.photos/seed/avatar/40/40" data-ai-hint="person face" />
+                <AvatarFallback>
+                    <User />
+                </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col group-data-[collapsible=icon]:hidden">
+                <span className="font-medium text-sm">User</span>
+                </div>
             </div>
-          </div>
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>{children}</SidebarInset>
