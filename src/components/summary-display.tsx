@@ -1,12 +1,12 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Lightbulb } from "lucide-react";
 
-type ParsedContent = {
+export type ParsedContent = {
   type: 'paragraph' | 'pullquote' | 'reflection';
   content: string;
 };
 
-type Chapter = {
+export type Chapter = {
   title: string;
   content: ParsedContent[];
 };
@@ -14,7 +14,8 @@ type Chapter = {
 // This regex helps to split the content by the custom tags
 const tagRegex = /({{pullquote:.*?}}|{{reflection:.*?}})/g;
 
-const parseSummary = (text: string): Chapter[] => {
+export const parseSummary = (text: string): Chapter[] => {
+  if (!text) return [];
   const chapters = text.trim().split(/\n?### /).filter(Boolean);
   
   return chapters.map((chapterText) => {
@@ -81,22 +82,19 @@ const renderContent = (item: ParsedContent, index: number) => {
 };
 
 
-export function SummaryDisplay({ summary }: { summary: string }) {
-  const parsedSummary = parseSummary(summary);
+export function SummaryDisplay({ chapter }: { chapter: Chapter }) {
 
   return (
-    <Card className="shadow-none bg-transparent border-0">
-      <CardContent className="space-y-12 font-serif text-lg text-justify leading-relaxed text-foreground/90">
-        {parsedSummary.map((section, index) => (
-          <div key={index} className="space-y-4">
-            <h3 className="text-4xl font-bold tracking-tight text-primary/90 font-headline border-b-2 border-primary/20 pb-4">
-              {section.title}
-            </h3>
-            <div className="summary-content">
-              {section.content.map(renderContent)}
-            </div>
+    <Card className="shadow-none bg-transparent border-0 h-full">
+      <CardContent className="font-serif text-lg text-justify leading-relaxed text-foreground/90 h-full overflow-y-auto p-8">
+        <div className="space-y-4">
+          <h3 className="text-4xl font-bold tracking-tight text-primary/90 font-headline border-b-2 border-primary/20 pb-4">
+            {chapter.title}
+          </h3>
+          <div className="summary-content">
+            {chapter.content.map(renderContent)}
           </div>
-        ))}
+        </div>
       </CardContent>
     </Card>
   );

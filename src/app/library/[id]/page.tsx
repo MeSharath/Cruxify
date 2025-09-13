@@ -6,7 +6,6 @@ import { books, summaries } from "@/lib/data";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { AudioPlayer } from "@/components/audio-player";
-import { SummaryDisplay } from "@/components/summary-display";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Loader2 } from "lucide-react";
@@ -14,6 +13,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { generateAudioAction } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
+import { BookView } from "@/components/book-view";
 
 export default function BookSummaryPage({ params }: { params: { id: string } }) {
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
@@ -109,11 +109,8 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
                 ) : (
                   audioSrc ? <AudioPlayer audioSrc={audioSrc} /> : <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg font-sans"><p className="text-muted-foreground">Audio could not be generated.</p></div>
                 )}
-                <div className="relative p-2 bg-gradient-to-r from-neutral-300/30 via-transparent to-neutral-300/30 rounded-lg shadow-2xl before:absolute before:inset-0 before:-z-10 before:bg-white/50 before:rounded-lg after:absolute after:left-1/2 after:-translate-x-1/2 after:top-0 after:bottom-0 after:w-2 after:bg-neutral-300/40 after:shadow-inner">
-                  <div className="relative bg-background/80 backdrop-blur-sm p-px shadow-lg rounded-sm">
-                    <SummaryDisplay summary={summary} />
-                  </div>
-                </div>
+                
+                <BookView summary={summary} />
               </div>
             </div>
           </div>
