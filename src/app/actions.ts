@@ -2,7 +2,7 @@
 "use server";
 
 import { generateBookSummary } from "@/ai/flows/generate-book-summary";
-import { ElevenLabsClient } from "elevenlabs-node";
+import type { ElevenLabsClient as ElevenLabsClientType } from "elevenlabs-node";
 
 export async function handleFileUpload(
   formData: FormData
@@ -43,11 +43,13 @@ export async function generateAudioAction(
     return { success: false, error: "ElevenLabs API key is not configured. Please add it on the Settings page." };
   }
 
-  const elevenlabs = new ElevenLabsClient({
-    apiKey: elevenLabsApiKey,
-  });
-
   try {
+    // Dynamically import the client to prevent module resolution issues.
+    const { ElevenLabsClient } = await import("elevenlabs-node");
+    const elevenlabs: ElevenLabsClientType = new ElevenLabsClient({
+      apiKey: elevenLabsApiKey,
+    });
+
     const audioStream = await elevenlabs.generate({
       stream: true,
       voice: "Rachel",
@@ -66,6 +68,7 @@ export async function generateAudioAction(
     return { success: true, audioDataUri };
   } catch (error) {
     console.error("ElevenLabs API error:", error);
-    return { success: false, error: "Failed to generate audio from ElevenLabs. Please check your API key and subscription status." };
+    const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred.";
+    return { success: false, error: `Failed to generate audio from ElevenLabs: ${errorMessage}` };
   }
 }
