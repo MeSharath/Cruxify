@@ -66,7 +66,7 @@ ${input.bookContent}`;
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'llama-3-sonar-large-32k-online',
+        model: 'sonar-pro',
         messages: [
           { role: 'system', content: 'You are an expert book summarizer.' },
           { role: 'user', content: prompt },
