@@ -13,43 +13,49 @@ import Link from "next/link";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { BookView } from "@/components/book-view";
-import { audioData } from "@/lib/audio-data";
+import { generateAudioAction } from "@/app/actions";
 
 export default function BookSummaryPage({ params }: { params: { id: string } }) {
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
-  const [audioGenerationStarted, setAudioGenerationStarted] = useState(false);
   const { toast } = useToast();
 
   const book = books.find((b) => b.id === params.id);
   const summary = summaries[params.id];
-  const preGeneratedAudio = audioData[params.id];
 
   const handleGenerateAudio = async () => {
-    if (!preGeneratedAudio) {
+    setIsLoadingAudio(true);
+    try {
+      const result = await generateAudioAction(params.id);
+
+      if (result.success) {
+        setAudioSrc(result.audioData);
+      } else {
+        toast({
+          title: "Audio Generation Failed",
+          description: result.error,
+          variant: "destructive",
+        });
+        setAudioSrc(null); // Clear any previous audio
+      }
+    } catch (error) {
+      console.error("Failed to generate audio:", error);
       toast({
-        title: "Audio Not Available",
-        description: "An audio version for this book is not available at this time.",
+        title: "Audio Generation Failed",
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
-      return;
-    }
-
-    setIsLoadingAudio(true);
-    setAudioGenerationStarted(true);
-
-    // Simulate the "illusion" of generating audio with a delay
-    setTimeout(() => {
-      setAudioSrc(preGeneratedAudio);
+      setAudioSrc(null); // Clear any previous audio
+    } finally {
       setIsLoadingAudio(false);
-    }, 3000); // 3-second delay
+    }
   };
 
   if (!book || !summary) {
     notFound();
   }
 
-  const hasAudio = !!preGeneratedAudio;
+  const hasAudio = true; // We assume all books can have audio generated
 
   return (
     <MainLayout>
@@ -88,7 +94,7 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
                   </div>
                   {hasAudio && (
                     <div className="mt-6 font-sans">
-                      {!audioGenerationStarted ? (
+                      {!audioSrc && !isLoadingAudio ? (
                         <Button onClick={handleGenerateAudio} className="w-full">
                           <Headphones className="mr-2 size-4" />
                           I'd rather listen to it
