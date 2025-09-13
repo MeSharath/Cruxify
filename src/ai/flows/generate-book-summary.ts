@@ -45,15 +45,11 @@ const generateBookSummaryFlow = ai.defineFlow(
       throw new Error("Perplexity API key is not configured. Please add it to your environment variables or provide it in the settings.");
     }
     
-    const prompt = `You are a world-class AI assistant that specializes in distilling books into powerful, life-changing summaries. Your goal is to maximize user retention and empower them to apply the book's wisdom immediately.
+    const prompt = `You are a master storyteller and literary artist. Your task is to transform the provided book content into an immersive, narrative-style summary that captures the essence and voice of the original author.
 
-For the book content provided, create a compelling 15-minute summary. Go beyond just listing key points. For each key insight, you must:
-1.  **Explain the Insight Clearly:** Break down the core concept in a simple, memorable way.
-2.  **Highlight the 'Why':** Explain why this insight is crucial for the user's personal growth, productivity, or well-being. Make them feel the importance of this knowledge.
-3.  **Provide Actionable 'How-Tos':** Give concrete, step-by-step actions the user can take *today* to implement this insight. Frame these as small, easy-to-start habits.
-4.  **Connect to Habit Formation:** For the actionables, explicitly suggest a technique from "Atomic Habits" (like habit stacking, environment design, or the two-minute rule) to help the user integrate this into their life.
+Instead of a dry list of key points, craft a compelling narrative that flows like a story. Use engaging metaphors, vivid descriptions, and a chapter-like structure with descriptive titles. The goal is to make the user feel like they are reading a beautifully condensed version of the book itself.
 
-Structure the output in a Headway-style format with clear section titles (using markdown '###') for each key insight and bulleted lists for the actionables.
+Your summary should be structured into several "chapters," each with a descriptive title formatted with markdown '###'. Within each chapter, weave the key insights into a flowing narrative. Avoid bullet points or numbered lists. Instead, explain concepts through storytelling and examples that resonate with the book's tone.
 
 Book Content:
 ${input.bookContent}`;
@@ -68,7 +64,7 @@ ${input.bookContent}`;
       body: JSON.stringify({
         model: 'sonar-pro',
         messages: [
-          { role: 'system', content: 'You are an expert book summarizer.' },
+          { role: 'system', content: 'You are an expert book summarizer that writes in a narrative, literary style.' },
           { role: 'user', content: prompt },
         ],
       }),
