@@ -2,7 +2,6 @@
 "use server";
 
 import { generateBookSummary } from "@/ai/flows/generate-book-summary";
-import { generateAudio } from "@/ai/flows/generate-audio-flow";
 
 export async function handleFileUpload(
   formData: FormData
@@ -39,41 +38,39 @@ export async function generateAudioAction(
 ): Promise<{ success: boolean; audioDataUri?: string; error?: string }> {
   const elevenLabsApiKey = userApiKey || process.env.ELEVENLABS_API_KEY;
 
-  if (elevenLabsApiKey) {
-    try {
-      const { ElevenLabsClient } = await import("elevenlabs-node");
-      const elevenlabs = new ElevenLabsClient({
-        apiKey: elevenLabsApiKey,
-      });
-
-      const audioStream = await elevenlabs.generate({
-        stream: true,
-        voice: "Rachel",
-        model_id: "eleven_multilingual_v2",
-        text,
-      });
-
-      const chunks: Buffer[] = [];
-      for await (const chunk of audioStream) {
-        chunks.push(chunk);
-      }
-
-      const audioBuffer = Buffer.concat(chunks);
-      const audioDataUri = `data:audio/mpeg;base64,${audioBuffer.toString("base64")}`;
-
-      return { success: true, audioDataUri };
-    } catch (error) {
-      console.warn("ElevenLabs API error, falling back to default TTS:", error);
-      // Fall through to the default TTS if ElevenLabs fails
-    }
+  if (!elevenLabsApiKey) {
+    return {
+      success: false,
+      error: "ElevenLabs API key not configured.",
+    };
   }
 
-  // Fallback to default TTS
   try {
-    const { media } = await generateAudio(text);
-    return { success: true, audioDataUri: media };
+    const { ElevenLabsClient } = await import("elevenlabs-node");
+    const elevenlabs = new ElevenLabsClient({
+      apiKey: elevenLabsApiKey,
+    });
+
+    const audioStream = await elevenlabs.generate({
+      stream: true,
+      voice: "Rachel",
+      model_id: "eleven_multilingual_v2",
+      text,
+    });
+
+    const chunks: Buffer[] = [];
+    for await (const chunk of audioStream) {
+      chunks.push(chunk);
+    }
+
+    const audioBuffer = Buffer.concat(chunks);
+    const audioDataUri = `data:audio/mpeg;base64,${audioBuffer.toString(
+      "base64"
+    )}`;
+
+    return { success: true, audioDataUri };
   } catch (error) {
-    console.error("Default TTS error:", error);
+    console.error("ElevenLabs API error:", error);
     const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred.";
     return { success: false, error: `Failed to generate audio: ${errorMessage}` };
   }
