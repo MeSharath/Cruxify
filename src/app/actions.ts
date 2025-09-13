@@ -2,6 +2,7 @@
 "use server";
 
 import { generateBookSummary } from "@/ai/flows/generate-book-summary";
+import * as elevenlabs from "elevenlabs-node";
 
 export async function handleFileUpload(
   formData: FormData
@@ -46,12 +47,11 @@ export async function generateAudioAction(
   }
 
   try {
-    const { ElevenLabsClient } = await import("elevenlabs-node");
-    const elevenlabs = new ElevenLabsClient({
+    const client = new elevenlabs.ElevenLabsClient({
       apiKey: elevenLabsApiKey,
     });
 
-    const audioStream = await elevenlabs.generate({
+    const audioStream = await client.generate({
       stream: true,
       voice: "Rachel",
       model_id: "eleven_multilingual_v2",
