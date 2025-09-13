@@ -70,7 +70,8 @@ export async function generateAudioAction(
     if (!response.ok) {
         const errorBody = await response.json();
         console.error("ElevenLabs API error response:", errorBody);
-        throw new Error(`Failed to generate audio: ${errorBody.detail?.message || response.statusText}`);
+        const errorMessage = `Failed to generate audio: ${errorBody.detail?.message || response.statusText}`;
+        return { success: false, error: errorMessage };
     }
 
     const audioArrayBuffer = await response.arrayBuffer();
