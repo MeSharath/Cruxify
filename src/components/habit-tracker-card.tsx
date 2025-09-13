@@ -1,3 +1,4 @@
+
 import {
   Card,
   CardContent,
@@ -8,7 +9,11 @@ import {
 import { Flame, BookCheck, Trophy } from "lucide-react";
 import { userStats } from "@/lib/data";
 
-export function HabitTrackerCard() {
+type HabitTrackerCardProps = {
+  booksInLibrary: number;
+};
+
+export function HabitTrackerCard({ booksInLibrary }: HabitTrackerCardProps) {
   const stats = [
     {
       icon: Flame,
@@ -25,7 +30,7 @@ export function HabitTrackerCard() {
     {
       icon: BookCheck,
       label: "Books in Library",
-      value: userStats.booksCompleted,
+      value: booksInLibrary,
       color: "text-green-400",
     },
   ];

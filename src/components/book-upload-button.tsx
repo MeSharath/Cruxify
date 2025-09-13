@@ -15,7 +15,11 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { handleFileUpload } from "@/app/actions";
 
-export function BookUploadButton() {
+type BookUploadButtonProps = {
+  onBookUploaded: (fileName: string) => void;
+};
+
+export function BookUploadButton({ onBookUploaded }: BookUploadButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -48,13 +52,9 @@ export function BookUploadButton() {
         title: "Upload Successful",
         description: `"${file.name}" has been added to your library. Summary is being generated.`,
       });
+      onBookUploaded(file.name);
       setIsOpen(false);
       setFileName(null);
-      
-      // In a real app, you'd re-fetch or update the library state here.
-      // For this demo, we'll just reload to simulate the update.
-      setTimeout(() => window.location.reload(), 1500);
-
     } else {
       toast({
         title: "Upload Failed",
