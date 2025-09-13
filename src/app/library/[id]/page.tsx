@@ -64,11 +64,11 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
 
   return (
     <MainLayout>
-      <div className="bg-background text-foreground">
+      <div className="bg-background text-foreground font-serif">
         <div className="p-4 md:p-8">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             <div className="mb-6">
-              <Button asChild variant="ghost">
+              <Button asChild variant="ghost" className="font-sans">
                 <Link href="/">
                   <ArrowLeft className="mr-2 size-4" />
                   Back to Library
@@ -89,11 +89,11 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
                       data-ai-hint={book.imageHint}
                     />
                   </div>
-                  <h1 className="text-3xl font-bold leading-tight font-headline">
+                  <h1 className="text-3xl font-bold leading-tight font-headline text-foreground/90">
                     {book.title}
                   </h1>
-                  <p className="text-muted-foreground text-lg mt-1">{book.author}</p>
-                  <div className="flex flex-wrap gap-2 mt-4">
+                  <p className="text-muted-foreground text-lg mt-1 font-sans">{book.author}</p>
+                  <div className="flex flex-wrap gap-2 mt-4 font-sans">
                     <Badge variant="secondary">15-min Summary</Badge>
                     {audioSrc && <Badge variant="secondary">Audio Available</Badge>}
                   </div>
@@ -102,14 +102,18 @@ export default function BookSummaryPage({ params }: { params: { id: string } }) 
 
               <div className="md:col-span-2 space-y-6">
                 {isLoadingAudio ? (
-                  <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg">
+                  <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg font-sans">
                     <Loader2 className="size-8 animate-spin text-muted-foreground" />
                     <p className="ml-4 text-muted-foreground">Generating audio...</p>
                   </div>
                 ) : (
-                  audioSrc ? <AudioPlayer audioSrc={audioSrc} /> : <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg"><p className="text-muted-foreground">Audio could not be generated.</p></div>
+                  audioSrc ? <AudioPlayer audioSrc={audioSrc} /> : <div className="flex items-center justify-center h-48 bg-card rounded-lg shadow-lg font-sans"><p className="text-muted-foreground">Audio could not be generated.</p></div>
                 )}
-                <SummaryDisplay summary={summary} />
+                <div className="relative p-2 bg-gradient-to-r from-neutral-300/30 via-transparent to-neutral-300/30">
+                  <div className="relative bg-background p-px shadow-lg rounded-sm">
+                    <SummaryDisplay summary={summary} />
+                  </div>
+                </div>
               </div>
             </div>
           </div>

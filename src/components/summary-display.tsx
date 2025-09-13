@@ -21,14 +21,14 @@ export function SummaryDisplay({ summary }: SummaryDisplayProps) {
   const parsedSummary = parseSummary(summary);
 
   return (
-    <Card className="shadow-2xl">
+    <Card className="shadow-2xl bg-transparent border-0">
       <CardHeader>
-        <CardTitle className="font-headline">AI Summary</CardTitle>
+        <CardTitle className="font-headline text-foreground/80">AI Summary</CardTitle>
       </CardHeader>
       <CardContent className="space-y-10 font-serif">
         {parsedSummary.map((section, index) => (
           <div key={index} className="space-y-4">
-            <h3 className="text-3xl font-bold tracking-tight text-primary font-headline">
+            <h3 className="text-3xl font-bold tracking-tight text-primary/90 font-headline border-b pb-2">
               {section.title}
             </h3>
             <div className="space-y-5 text-lg leading-relaxed text-foreground/90 text-justify">
